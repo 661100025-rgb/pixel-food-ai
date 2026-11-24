@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#10152d">
+<meta name="description" content="PIXEL FOOD AI ผู้ช่วยเลือกเมนูอาหารจากวัตถุดิบที่มี">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<title>PIXEL FOOD AI</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1024;--panel:#151f3d;--panel2:#202d50;--cyan:#66e7ff;--pink:#ff78c8;--gold:#ffd978;--text:#f5f6ff;--muted:#b5c2e5}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% 0,#263a70 0,#10152d 45%,#080d1c 100%);color:var(--text);font-family:system-ui,-apple-system,"Noto Sans Thai",sans-serif;min-height:100vh;padding:12px}
+.app{max-width:620px;margin:auto;border:2px solid #4ddcf6;border-radius:22px;padding:14px;background:linear-gradient(160deg,#101a37ee,#0d1329f5);box-shadow:0 0 22px #36d8ff55}
+header{display:flex;justify-content:space-between;align-items:center;gap:8px}.brand{font-weight:1000;letter-spacing:1px;color:var(--cyan);font-size:clamp(19px,5vw,27px);text-shadow:0 0 12px #3dcfff88}.online{font-size:12px;color:#7cffaa;border:1px solid #47d989;border-radius:20px;padding:5px 10px}
+.sub{text-align:center;color:var(--gold);font-size:clamp(18px,5vw,25px);font-weight:900;margin:10px 0}
+.mascot{display:flex;align-items:center;justify-content:center;gap:12px;background:linear-gradient(90deg,#1a2850,#283967);border:1px solid #526ba7;border-radius:18px;padding:10px;margin:10px 0}
+.boy{font-size:64px;filter:drop-shadow(0 0 8px #71dfff);line-height:1}.speech{background:#f5eaff;color:#241d48;border-radius:14px;padding:9px 12px;font-weight:800;font-size:14px;max-width:210px}.cat{font-size:42px}
+.card{background:#172344;border:1px solid #48649b;border-radius:18px;padding:14px;margin:12px 0}
+.kicker{font-size:12px;color:var(--cyan);font-weight:900}.dish{font-size:clamp(22px,6vw,30px);font-weight:1000;margin:4px 0;color:#fff}.desc{color:var(--muted);font-size:14px}
+.ingredients{background:#26365c;border-radius:12px;padding:10px;margin:10px 0;font-size:14px}
+button,select{font:inherit}button{border:1px solid #5e8fc8;border-radius:13px;background:#1d3763;color:white;padding:11px 12px;font-weight:800;cursor:pointer}button.primary{background:linear-gradient(100deg,#087cae,#664cc0);border-color:#7be8ff;box-shadow:0 0 12px #39cfff55}button.pink{background:linear-gradient(100deg,#c33e9a,#773eb8);border-color:#ff9bdc}button:active{transform:scale(.98)}
+.controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.filters{display:flex;gap:7px;flex-wrap:wrap;margin:8px 0}.filters button{flex:1;min-width:78px}.filters button.active{background:#087cae;border-color:var(--cyan)}
+.row{display:flex;gap:8px}.row>*{flex:1}.tiny{font-size:12px;color:var(--muted)}.recipe{display:none;line-height:1.65;background:#26365c;border-radius:12px;padding:10px;margin-top:9px}.recipe.show{display:block}
+footer{text-align:center;color:#9aadd5;font-size:12px;margin:12px 0 2px}
+@media(min-width:520px){body{padding:22px}.app{padding:18px}.mascot{padding:14px}.boy{font-size:76px}}
+</style>
+</head>
+<body>
+<main class="app">
+<header><div class="brand">✦ PIXEL FOOD AI ✦</div><div class="online">● READY</div></header>
+<div class="sub">วันนี้กินอะไรดี?</div>
+<section class="mascot"><div class="boy" aria-label="เชฟน้อย">🧑🏻‍🍳</div><div class="speech" id="speech">หิวแล้วเหรอ? ให้ผมช่วยเลือกเมนูไหมครับ!</div><div class="cat">🐈</div></section>
+<section class="card">
+<div class="kicker">♛ เมนูแนะนำวันนี้ <span id="origin" style="float:right;color:var(--gold)">อาหารไทย</span></div>
+<div class="dish" id="dish">ข้าวกะเพราหมูไข่ดาว</div>
+<div class="desc" id="desc">เมนูคลาสสิก ทำง่าย อร่อยได้ทุกวัน</div>
+<div class="ingredients"><b style="color:var(--cyan)">วัตถุดิบ</b><div id="items">หมู • ไข่ • ข้าว • กะเพรา</div></div>
+<div class="row"><button class="primary" id="recipeBtn">ดูวิธีทำ ➜</button><button id="favBtn">♡ เมนูโปรด</button></div>
+<div class="recipe" id="recipe"></div>
+</section>
+<div class="kicker">เลือกแนวเมนู</div>
+<div class="filters" id="filters">
+<button class="active" data-filter="all">🍱 ทั้งหมด</button><button data-filter="rice">🍚 ข้าว</button><button data-filter="noodle">🍜 เส้น</button>
+</div>
+<div class="controls">
+<button class="primary" id="randomBtn">🎲 สุ่มเมนูใหม่</button>
+<button id="fridgeBtn">🧊 จากของที่มี</button>
+<button id="budgetBtn">🪙 เมนูประหยัด</button>
+<button id="worldBtn">🌏 เมนูต่างประเทศ</button>
+</div>
+<p class="tiny" id="status" aria-live="polite">ข้าว 50% · เส้น 50% · เน้นวัตถุดิบพื้นฐาน</p>
+<footer>เชฟน้อย & น้องแมว ขอให้มื้อนี้อร่อยนะ ♡</footer>
+</main>
+<script>
+const foods=[
+{name:"ข้าวกะเพราหมูไข่ดาว",type:"rice",origin:"ไทย",desc:"เมนูคลาสสิก ทำง่าย อร่อยได้ทุกวัน",items:"หมู • ไข่ • ข้าว • กะเพรา",recipe:"1. ผัดหมูกับกระเทียมและเครื่องปรุงจนสุก\\n2. ใส่ใบกะเพราแล้วผัดให้เข้ากัน\\n3. เสิร์ฟกับข้าวและไข่ดาว",budget:false},
+{name:"ข้าวไก่กระเทียม",type:"rice",origin:"ไทย",desc:"หอมกระเทียม ใช้เครื่องปรุงพื้นฐาน",items:"ไก่ • ข้าว • กระเทียม • ซีอิ๊ว",recipe:"1. ผัดกระเทียมให้หอม\\n2. ใส่ไก่หั่นชิ้น ผัดจนสุก\\n3. ปรุงรสด้วยซีอิ๊ว เสิร์ฟกับข้าว",budget:false},
+{name:"ข้าวผัดไข่",type:"rice",origin:"ไทย",desc:"วัตถุดิบน้อย เหมาะกับวันที่อยากประหยัด",items:"ข้าว • ไข่ • เครื่องปรุง",recipe:"1. ตั้งกระทะ ใส่น้ำมันเล็กน้อย\\n2. ผัดไข่ ใส่ข้าวลงไป\\n3. ปรุงรสแล้วผัดให้เข้ากัน",budget:true},
+{name:"ข้าวต้มหมู",type:"rice",origin:"ไทย",desc:"ซุปร้อน ๆ ทำง่าย",items:"หมู • ข้าว • กระเทียม • เครื่องปรุง",recipe:"1. ต้มน้ำให้เดือด ใส่หมูจนสุก\\n2. ใส่ข้าวและเคี่ยวจนได้ความนุ่ม\\n3. ปรุงรสตามชอบ",budget:false},
+{name:"ข้าวไข่ข้น",type:"rice",origin:"ไทยประยุกต์",desc:"เมนูง่าย ใช้ของไม่กี่อย่าง",items:"ไข่ • ข้าว • เครื่องปรุง",recipe:"1. ตีไข่กับเครื่องปรุงเล็กน้อย\\n2. คนในกระทะไฟอ่อนจนไข่เริ่มเซตตัว\\n3. ราดบนข้าวสวย",budget:true},
+{name:"มาม่าผัดไข่",type:"noodle",origin:"ไทยประยุกต์",desc:"ปรับรสได้ตามเครื่องปรุงที่มี",items:"เส้นบะหมี่ • ไข่ • เครื่องปรุง",recipe:"1. ลวกเส้นพอสุกแล้วพักไว้\\n2. ผัดไข่ให้สุก ใส่เส้น\\n3. เติมเครื่องปรุง คลุกให้เข้ากัน",budget:true},
+{name:"บะหมี่หมูผัดกระเทียม",type:"noodle",origin:"ไทยประยุกต์",desc:"เมนูเส้น ใช้วัตถุดิบพื้นฐาน",items:"เส้นบะหมี่ • หมู • กระเทียม • ซีอิ๊ว",recipe:"1. ลวกเส้นให้สุก\\n2. ผัดหมูกับกระเทียมจนสุก\\n3. ใส่เส้น ปรุงรสแล้วคลุกให้เข้ากัน",budget:false},
+{name:"บะหมี่น้ำหมู",type:"noodle",origin:"ไทย",desc:"ซุปร้อน ๆ วัตถุดิบไม่เยอะ",items:"เส้นบะหมี่ • หมู • เครื่องปรุง",recipe:"1. ต้มน้ำปรุงรสเป็นน้ำซุป\\n2. ต้มหมูให้สุกทั่วถึง\\n3. ลวกเส้นแล้วจัดใส่ชาม",budget:false},
+{name:"ผัดซีอิ๊วหมูแบบง่าย",type:"noodle",origin:"ไทย",desc:"รสคุ้นเคย ปรับด้วยของที่หาได้",items:"เส้น • หมู • ไข่ • ซีอิ๊ว",recipe:"1. ผัดหมูจนสุก\\n2. ใส่ไข่และเส้น\\n3. ปรุงซีอิ๊ว ผัดให้เข้ากัน",budget:false},
+{name:"บะหมี่ผัดไข่สไตล์ญี่ปุ่น",type:"noodle",origin:"ญี่ปุ่นประยุกต์",desc:"เมนูพิเศษ ดัดแปลงด้วยของทั่วไป",items:"เส้นบะหมี่ • ไข่ • ซีอิ๊ว • กะหล่ำปลี (ถ้ามี)",recipe:"1. ผัดไข่ให้พอสุก\\n2. ใส่เส้นและผักที่มี\\n3. ปรุงด้วยซีอิ๊วแล้วคลุกให้เข้ากัน",budget:false,world:true},
+{name:"ข้าวไก่ซอสซีอิ๊วสไตล์ญี่ปุ่น",type:"rice",origin:"ญี่ปุ่นประยุกต์",desc:"เมนูต่างประเทศแบบใช้เครื่องปรุงใกล้ตัว",items:"ไก่ • ข้าว • ซีอิ๊ว • น้ำตาล",recipe:"1. ผัดไก่จนสุก\\n2. เติมซีอิ๊วและน้ำตาลเล็กน้อย\\n3. เคี่ยวให้ซอสเคลือบไก่ เสิร์ฟบนข้าว",budget:false,world:true}
+];
+let filter="all",current=0,favorites=JSON.parse(localStorage.getItem("pfa-favs")||"[]");
+const $=id=>document.getElementById(id);
+function pool(mode="normal"){
+ let p=foods.filter(f=>(filter==="all"||f.type===filter));
+ if(mode==="budget")p=p.filter(f=>f.budget);
+ if(mode==="world")p=p.filter(f=>f.world);
+ if(mode==="fridge")p=p.filter(f=>!f.world && /ไข่|หมู|ไก่|ข้าว|เส้น/.test(f.items));
+ return p.length?p:foods.filter(f=>filter==="all"||f.type===filter);
+}
+function show(i,message){
+ current=i;let f=foods[i];$("dish").textContent=f.name;$("origin").textContent=f.origin;$("desc").textContent=f.desc;$("items").textContent=f.items;$("recipe").textContent=f.recipe.replaceAll("\\n","\n");$("recipe").classList.remove("show");$("recipeBtn").textContent="ดูวิธีทำ ➜";$("favBtn").textContent=favorites.includes(f.name)?"♥ บันทึกแล้ว":"♡ เมนูโปรด";$("speech").textContent=message||"เมนูนี้น่าสนใจไหมครับ? ลองทำกันเลย!";}
+function random(mode){let p=pool(mode);let choices=p.filter((f)=>foods.indexOf(f)!==current);if(!choices.length)choices=p;let f=choices[Math.floor(Math.random()*choices.length)];show(foods.indexOf(f),mode==="world"?"เมนูต่างประเทศมาแล้ว! ลองเปลี่ยนรสชาติบ้างนะครับ":"เจอเมนูแล้วครับ! วัตถุดิบไม่เยอะด้วย");}
+$("randomBtn").onclick=()=>random();$("fridgeBtn").onclick=()=>random("fridge");$("budgetBtn").onclick=()=>random("budget");$("worldBtn").onclick=()=>random("world");
+$("recipeBtn").onclick=()=>{$("recipe").classList.toggle("show");$("recipeBtn").textContent=$("recipe").classList.contains("show")?"ซ่อนวิธีทำ":"ดูวิธีทำ ➜";};
+$("favBtn").onclick=()=>{let n=foods[current].name;if(favorites.includes(n))favorites=favorites.filter(x=>x!==n);else favorites.push(n);localStorage.setItem("pfa-favs",JSON.stringify(favorites));$("favBtn").textContent=favorites.includes(n)?"♥ บันทึกแล้ว":"♡ เมนูโปรด";$("status").textContent="เมนูโปรดของคุณ "+favorites.length+" รายการ";};
+document.querySelectorAll("[data-filter]").forEach(b=>b.onclick=()=>{filter=b.dataset.filter;document.querySelectorAll("[data-filter]").forEach(x=>x.classList.toggle("active",x===b));random();});
+if("serviceWorker" in navigator && location.protocol.startsWith("http")){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));}
+show(0,"หิวแล้วเหรอ? ให้ผมช่วยเลือกเมนูไหมครับ!");
+</script>
+</body></html>

@@ -1,31 +1,29 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="utf-8">
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#10152d">
-<meta name="description" content="PIXEL FOOD AI ผู้ช่วยเลือกเมนูอาหารจากวัตถุดิบที่มี">
+<meta name="theme-color" content="#101522">
+<meta name="description" content="PIXEL FOOD AI ผู้ช่วยสุ่มเมนูอาหารประจำวัน">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <title>PIXEL FOOD AI</title>
+
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&display=swap');
 
 :root{
-  color-scheme:dark;
-  --bg:#080e18;
-  --panel:#111e29;
-  --panel2:#192c35;
-  --panel3:#223a40;
-  --emerald:#397d68;
-  --emerald-light:#70b99a;
-  --silver:#d9e2e8;
-  --silver-dim:#9aabb5;
-  --ruby:#a83e55;
-  --ruby-light:#e17a86;
-  --gold:#c9ad72;
-  --gold-light:#f0d9a0;
-  --text:#f2f1eb;
-  --muted:#aebdc0;
+  --bg:#0b101b;
+  --panel:#141d2c;
+  --panel2:#192438;
+  --line:rgba(205,190,150,.22);
+  --gold:#c9a96e;
+  --gold2:#f0d6a0;
+  --text:#f3eee4;
+  --muted:#9ba8b9;
+  --green:#58b99a;
+  --red:#b96c75;
+  --shadow:0 18px 45px rgba(0,0,0,.38);
 }
 
 *{box-sizing:border-box}
@@ -33,896 +31,1838 @@
 body{
   margin:0;
   min-height:100vh;
-  padding:16px;
   color:var(--text);
-  font-family:system-ui,-apple-system,"Noto Sans Thai",sans-serif;
+  font-family:'Kanit',sans-serif;
   background:
-    radial-gradient(ellipse at 50% 0%,#315b5140,transparent 42%),
-    radial-gradient(circle at 8% 30%,#8e34401c,transparent 30%),
-    radial-gradient(circle at 92% 65%,#315b7030,transparent 32%),
-    linear-gradient(155deg,#111d26 0%,#080e18 55%,#050a11 100%);
-  background-attachment:fixed;
+    radial-gradient(ellipse at 50% -15%,rgba(76,105,143,.25),transparent 48%),
+    radial-gradient(ellipse at 90% 80%,rgba(123,76,86,.12),transparent 40%),
+    var(--bg);
+  overflow-x:hidden;
 }
 
-button,input{font:inherit}
-button{
-  cursor:pointer;
-  -webkit-tap-highlight-color:transparent;
+body:before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  opacity:.16;
+  background-image:
+    radial-gradient(1px 1px at 20% 30%,#fff 99%,transparent),
+    radial-gradient(1px 1px at 70% 60%,#fff 99%,transparent),
+    radial-gradient(2px 2px at 40% 80%,#d9c18f 99%,transparent),
+    radial-gradient(1px 1px at 85% 15%,#fff 99%,transparent);
+  background-size:180px 180px,240px 240px,300px 300px,220px 220px;
+  z-index:-1;
 }
 
-/* ===== Main game interface ===== */
+button,input,textarea{font:inherit}
+button{cursor:pointer}
 
 .app{
-  position:relative;
-  isolation:isolate;
-  overflow:hidden;
-  max-width:620px;
+  width:min(100%,650px);
   margin:auto;
-  padding:18px;
-  border:1px solid #a78d5c;
-  border-radius:25px;
-  background:
-    linear-gradient(135deg,#ffffff08 0%,transparent 25%),
-    linear-gradient(155deg,#172a31 0%,#101c27 48%,#0b1520 100%);
-  box-shadow:
-    0 25px 65px #000b,
-    0 0 0 3px #080e18,
-    0 0 0 4px #79664480,
-    inset 0 1px 0 #ffffff24,
-    inset 0 -3px 12px #0008;
+  padding:24px 18px 50px;
 }
 
-.app:before{
-  content:"";
-  position:absolute;
-  inset:6px;
-  border:1px solid #c9ad7233;
-  border-radius:19px;
-  pointer-events:none;
-  z-index:-1;
-}
-
-.app:after{
-  content:"✧  ◇  ✦";
-  position:absolute;
-  top:130px;
-  right:12px;
-  color:#d5bd8140;
-  font-size:22px;
-  letter-spacing:12px;
-  pointer-events:none;
-  z-index:-1;
-}
-
-.app>*{
-  position:relative;
-}
-
-/* ===== Header ===== */
-
-header{
+.topbar{
   display:flex;
-  justify-content:space-between;
   align-items:center;
-  gap:8px;
-  padding:5px 2px 13px;
-  border-bottom:1px solid #b89b6250;
+  justify-content:space-between;
+  gap:12px;
+  padding:5px 2px 20px;
 }
 
 .brand{
-  color:var(--silver);
-  font-weight:1000;
-  letter-spacing:1.2px;
-  font-size:clamp(17px,4.7vw,25px);
-  text-shadow:
-    0 2px 0 #53636b,
-    0 0 13px #a6c7cf40;
+  display:flex;
+  align-items:center;
+  gap:11px;
 }
 
-.online{
-  color:#a4e4c3;
+.brand-mark{
+  width:43px;
+  height:43px;
+  border-radius:14px;
+  display:grid;
+  place-items:center;
+  font-size:22px;
+  color:var(--gold2);
+  background:linear-gradient(145deg,#29364a,#101827);
+  border:1px solid rgba(220,192,137,.4);
+  box-shadow:inset 0 1px 1px #ffffff20,0 7px 18px #0008;
+}
+
+.brand-name{
+  font-family:'Cormorant Garamond',serif;
+  font-size:22px;
+  letter-spacing:2px;
+  line-height:1.1;
+}
+
+.brand-sub{
   font-size:10px;
-  font-weight:900;
-  letter-spacing:1px;
-  border:1px solid #70b99a88;
-  background:linear-gradient(180deg,#245744,#15382e);
-  border-radius:7px;
-  padding:7px 11px;
-  white-space:nowrap;
-  box-shadow:
-    0 3px 0 #0a241d,
-    inset 0 1px #ffffff28,
-    0 0 12px #70b99a18;
+  color:var(--muted);
+  letter-spacing:2px;
+  margin-top:3px;
 }
 
-/* ===== Title ===== */
-
-.sub{
-  text-align:center;
-  color:var(--gold-light);
-  font-size:24px;
-  font-weight:950;
-  margin:18px 0 4px;
-  text-shadow:
-    0 2px 0 #634e31,
-    0 0 18px #d5b87535;
+.icon-btn{
+  width:42px;
+  height:42px;
+  border-radius:13px;
+  color:var(--gold2);
+  background:linear-gradient(145deg,#263348,#141d2b);
+  border:1px solid var(--line);
+  box-shadow:0 5px 12px #0006,inset 0 1px 1px #ffffff18;
+  font-size:17px;
 }
 
-.tagline{
+.icon-btn:active,.action-btn:active,.main-btn:active{
+  transform:translateY(2px);
+  box-shadow:inset 0 3px 8px #0007;
+}
+
+.hero{
+  position:relative;
   text-align:center;
-  color:var(--silver-dim);
+  padding:14px 8px 8px;
+}
+
+.eyebrow{
+  color:var(--gold);
+  font-family:'Cormorant Garamond',serif;
+  font-size:13px;
+  letter-spacing:4px;
+  text-transform:uppercase;
+}
+
+.hero h1{
+  margin:5px 0 2px;
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(32px,8vw,43px);
+  font-weight:600;
+  letter-spacing:2px;
+}
+
+.hero p{
+  margin:0;
+  color:var(--muted);
   font-size:12px;
-  margin-bottom:17px;
-  letter-spacing:.4px;
 }
 
-/* ===== Character panel ===== */
+.mascot-stage{
+  height:190px;
+  margin:8px auto 2px;
+  position:relative;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  overflow:hidden;
+}
+
+.mascot-glow{
+  position:absolute;
+  width:190px;
+  height:145px;
+  border-radius:50%;
+  background:radial-gradient(ellipse,rgba(109,91,139,.28),transparent 70%);
+  filter:blur(8px);
+}
 
 .mascot{
+  position:relative;
+  width:170px;
+  height:170px;
   display:flex;
   align-items:center;
   justify-content:center;
-  gap:12px;
-  padding:13px;
-  margin:12px 0 18px;
-  border:1px solid #78918a;
-  border-radius:17px;
-  background:
-    radial-gradient(ellipse at 20% 0%,#739c8428,transparent 55%),
-    linear-gradient(145deg,#253e3c,#172b32 65%,#111e2a);
-  box-shadow:
-    0 8px 18px #0006,
-    inset 0 1px 0 #ffffff20,
-    inset 0 -3px 8px #0005;
+  filter:drop-shadow(0 12px 16px #0008);
+  animation:float 5s ease-in-out infinite;
 }
 
-.mascot:before{
-  content:"✦";
+.mascot svg{width:100%;height:100%;overflow:visible}
+
+@keyframes float{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-7px)}
+}
+
+.companion{
   position:absolute;
-  top:5px;
-  right:9px;
-  color:#e1c58c80;
-  font-size:15px;
-  pointer-events:none;
+  width:65px;
+  height:65px;
+  right:calc(50% - 112px);
+  bottom:22px;
+  filter:drop-shadow(0 8px 9px #0009);
+  animation:float 4s ease-in-out infinite reverse;
 }
 
-.mascot svg{
-  width:145px;
-  height:112px;
-  flex:none;
-  filter:drop-shadow(0 6px 5px #0009);
-  image-rendering:pixelated;
-}
-
-.speech{
-  position:relative;
-  background:linear-gradient(145deg,#e8e4d7,#c9d1c9);
-  color:#26352f;
-  border:1px solid #f4e4bd;
-  border-radius:12px;
-  padding:11px 13px;
-  font-weight:750;
-  font-size:13px;
-  line-height:1.6;
-  max-width:230px;
-  box-shadow:
-    0 5px 0 #716d5c,
-    0 8px 14px #0005,
-    inset 0 1px #fff;
-}
-
-.speech:before{
-  content:"";
-  position:absolute;
-  left:-8px;
-  top:22px;
-  border-width:7px 9px 7px 0;
-  border-style:solid;
-  border-color:transparent #d8d9d0 transparent transparent;
-}
-
-/* ===== Main dish panel ===== */
+.companion svg{width:100%;height:100%}
 
 .card{
   position:relative;
-  padding:17px;
-  margin:14px 0;
-  border:1px solid #9e895e;
-  border-radius:17px;
+  margin-top:12px;
+  padding:22px 18px;
+  border:1px solid var(--line);
+  border-radius:23px;
   background:
-    linear-gradient(135deg,#ffffff09,transparent 35%),
-    linear-gradient(145deg,#1c3338,#13252d 65%,#10202a);
-  box-shadow:
-    0 9px 0 #08141a,
-    0 13px 23px #0008,
-    inset 0 1px 0 #ffffff20,
-    inset 0 -2px 8px #0005;
+    linear-gradient(145deg,rgba(255,255,255,.035),transparent 45%),
+    linear-gradient(145deg,#1b293d,#111a29 75%);
+  box-shadow:var(--shadow),inset 0 1px 1px #ffffff10;
+  overflow:hidden;
 }
 
 .card:before{
   content:"";
   position:absolute;
-  inset:5px;
-  border:1px solid #b99e6940;
-  border-radius:12px;
+  width:180px;
+  height:180px;
+  border:1px solid rgba(201,169,110,.08);
+  border-radius:50%;
+  right:-110px;
+  top:-100px;
+  box-shadow:0 0 0 18px rgba(201,169,110,.025),0 0 0 38px rgba(201,169,110,.018);
   pointer-events:none;
 }
 
-.card:after{
-  content:"✧";
-  position:absolute;
-  top:10px;
-  right:12px;
-  color:#e4cb8b80;
-  font-size:18px;
-  pointer-events:none;
+.card-label{
+  color:var(--gold);
+  font-size:11px;
+  letter-spacing:2px;
+  text-align:center;
 }
 
-.card-head{
+.dish-display{
+  min-height:155px;
   display:flex;
-  justify-content:space-between;
+  flex-direction:column;
+  justify-content:center;
   align-items:center;
-  gap:8px;
+  text-align:center;
+  padding:17px 5px 12px;
 }
 
-.kicker{
+.dish-emoji{
+  font-size:43px;
+  margin-bottom:8px;
+  filter:drop-shadow(0 5px 8px #0007);
+}
+
+.dish-name{
+  font-size:25px;
+  font-weight:600;
+  line-height:1.35;
+}
+
+.dish-desc{
+  color:var(--muted);
   font-size:12px;
-  color:var(--gold-light);
-  font-weight:950;
-  letter-spacing:.6px;
-}
-
-.origin{
-  color:#f0dba9;
-  font-size:11px;
-  font-weight:850;
-  background:linear-gradient(180deg,#573e3c,#352b2d);
-  border:1px solid #bd8d70;
-  border-radius:6px;
-  padding:5px 10px;
-  box-shadow:
-    0 2px 0 #201a1b,
-    inset 0 1px #ffffff20;
-}
-
-.dish{
-  font-size:clamp(22px,6vw,30px);
-  font-weight:1000;
-  line-height:1.4;
-  margin:14px 0 5px;
-  color:#f5eee0;
-  text-shadow:
-    0 2px 0 #5e655c,
-    0 0 16px #b7d3b92b;
-}
-
-.desc{
-  color:#b8c9c4;
-  font-size:13px;
+  margin-top:7px;
   line-height:1.7;
+  max-width:430px;
 }
 
-.placeholder{
-  color:#a7bbb5;
-  font-size:21px;
-  font-weight:850;
-  padding:18px 0 7px;
-}
-
-.ingredients{
-  position:relative;
-  margin:15px 0;
-  padding:13px;
-  border:1px solid #577a6e;
-  border-radius:11px;
-  background:
-    linear-gradient(120deg,#27443e,#1b3535);
-  box-shadow:
-    inset 0 2px 5px #0005,
-    inset 0 1px #ffffff10;
-  font-size:13px;
-  line-height:1.8;
-}
-
-.ingredients b{
-  color:#d9c58d;
-  display:block;
-  margin-bottom:4px;
-}
-
-/* ===== Buttons ===== */
-
-.row{
+.dish-meta{
   display:flex;
-  gap:9px;
-}
-
-.row>*{
-  flex:1;
-  min-width:0;
-}
-
-.btn{
-  position:relative;
-  border:1px solid #728b83;
-  border-radius:9px;
-  padding:12px 10px;
-  color:#f0f0e8;
-  font-weight:850;
-  background:
-    linear-gradient(180deg,#45645c 0%,#2c4944 48%,#203934 100%);
-  box-shadow:
-    0 4px 0 #10241f,
-    0 7px 12px #0005,
-    inset 0 1px 0 #ffffff38,
-    inset 0 -2px 3px #0004;
-  transition:
-    transform .13s ease,
-    filter .13s ease,
-    box-shadow .13s ease;
-}
-
-.btn:active{
-  transform:translateY(3px);
-  filter:brightness(1.18);
-  box-shadow:
-    0 1px 0 #10241f,
-    0 3px 6px #0005,
-    inset 0 1px 3px #0005;
-}
-
-.btn.primary{
-  background:
-    linear-gradient(180deg,#638d7b 0%,#376b59 50%,#234c40 100%);
-  border-color:#a7d0ac;
-  box-shadow:
-    0 4px 0 #123327,
-    0 7px 14px #0006,
-    0 0 14px #70b99a25,
-    inset 0 1px 0 #ffffff55,
-    inset 0 -2px 4px #0005;
-}
-
-.btn.pink{
-  background:
-    linear-gradient(180deg,#b66c78 0%,#854451 50%,#60313e 100%);
-  border-color:#df9b9b;
-  box-shadow:
-    0 4px 0 #381b28,
-    0 7px 13px #0006,
-    inset 0 1px 0 #ffffff45,
-    inset 0 -2px 4px #0005;
-}
-
-.btn:disabled{
-  opacity:.4;
-  cursor:not-allowed;
-  filter:grayscale(.5);
-}
-
-/* ===== Filter tabs ===== */
-
-.section-title{
-  font-size:13px;
-  font-weight:950;
-  color:#e5d5a9;
-  margin:20px 0 9px;
-  letter-spacing:.3px;
-  text-shadow:0 1px 5px #c9ad7230;
-}
-
-.filters{
-  display:flex;
-  gap:8px;
-  margin:9px 0 15px;
-}
-
-.filters button{
-  flex:1;
-  background:linear-gradient(180deg,#293b43,#1a2c34);
-  border-color:#667d7c;
-}
-
-.filters button.active{
-  background:linear-gradient(180deg,#638b78,#356b57 55%,#24483d);
-  border-color:#c6b17c;
-  color:#fff5d9;
-  box-shadow:
-    0 4px 0 #142c24,
-    0 0 14px #8cc5a32c,
-    inset 0 1px #ffffff50;
-}
-
-/* ===== Control menu ===== */
-
-.controls{
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:11px;
-}
-
-.control-btn{
-  min-height:54px;
-  font-size:13px;
-}
-
-/* ===== Recipe panel ===== */
-
-.recipe{
-  display:none;
-  white-space:pre-line;
-  line-height:1.85;
-  background:
-    linear-gradient(135deg,#ffffff08,transparent),
-    linear-gradient(145deg,#142a2d,#101e27);
-  border:1px solid #9b895f;
-  border-radius:11px;
-  padding:14px;
-  margin-top:14px;
-  color:#e4e9df;
-  font-size:13px;
-  box-shadow:
-    inset 0 2px 7px #0006,
-    0 2px 0 #08141a;
-}
-
-.recipe.show{
-  display:block;
-  animation:appear .25s ease;
-}
-
-/* ===== Sound settings ===== */
-
-.tiny{
-  font-size:11px;
-  color:#aebdb8;
-  line-height:1.6;
-  margin:12px 2px;
-}
-
-.sound-box{
-  display:flex;
-  align-items:center;
-  gap:10px;
+  gap:7px;
+  justify-content:center;
   flex-wrap:wrap;
-  margin-top:18px;
-  padding:13px;
-  border:1px solid #617d76;
-  border-radius:12px;
-  background:
-    linear-gradient(145deg,#263d3d,#182d34);
-  box-shadow:
-    0 4px 0 #0b1b20,
-    0 7px 12px #0005,
-    inset 0 1px #ffffff1c;
+  margin-top:12px;
 }
 
-.sound-label{
+.tag{
+  border:1px solid rgba(201,169,110,.25);
+  background:rgba(201,169,110,.08);
+  color:#e5cca0;
+  border-radius:30px;
+  padding:4px 11px;
+  font-size:10px;
+}
+
+.empty-dish{
+  color:var(--muted);
+  font-size:13px;
+}
+
+.main-btn{
+  width:100%;
+  min-height:57px;
+  border:1px solid #e5c98f88;
+  border-radius:16px;
+  color:#241b11;
+  font-size:16px;
+  font-weight:600;
+  letter-spacing:.5px;
+  background:linear-gradient(145deg,#f0d7a6,#c49b5c 60%,#a77c43);
+  box-shadow:0 7px 0 #72542f,0 12px 22px #0005,inset 0 2px 2px #fff8;
+  transition:.15s;
+}
+
+.main-btn:active{
+  transform:translateY(5px);
+  box-shadow:0 2px 0 #72542f,0 5px 12px #0005;
+}
+
+.main-btn:disabled{
+  opacity:.45;
+  cursor:not-allowed;
+  filter:grayscale(.6);
+}
+
+.secondary-row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:14px;
+}
+
+.action-btn{
+  min-height:45px;
+  border:1px solid var(--line);
+  border-radius:13px;
+  color:var(--text);
+  background:linear-gradient(145deg,#28364b,#172235);
+  box-shadow:0 5px 12px #0005,inset 0 1px 1px #ffffff14;
   font-size:12px;
-  font-weight:900;
-  color:#e2d3a8;
+  transition:.15s;
 }
 
-.sound-box input{
-  width:90px;
-  accent-color:#8fc6a4;
+.action-btn.gold{
+  color:var(--gold2);
+  border-color:#c9a96e55;
 }
 
-.sound-toggle{
-  margin-left:auto;
-  padding:8px 12px;
+.action-btn.green{
+  color:#a9e6d0;
+  border-color:#58b99a55;
+}
+
+.action-btn.red{
+  color:#e4a6aa;
+  border-color:#b96c7555;
+}
+
+.filter-area{
+  margin-top:20px;
+}
+
+.section-heading{
+  font-size:12px;
+  color:var(--muted);
+  margin-bottom:9px;
+  letter-spacing:.5px;
+}
+
+.pills{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+
+.pill{
+  padding:8px 14px;
+  border-radius:30px;
+  border:1px solid var(--line);
+  color:#c0c9d5;
+  background:#151f30;
   font-size:11px;
 }
 
-/* ===== Status and footer ===== */
+.pill.active{
+  color:var(--gold2);
+  border-color:#c9a96e88;
+  background:linear-gradient(145deg,#403b32,#252b35);
+  box-shadow:inset 0 1px 1px #ffffff14,0 3px 9px #0004;
+}
 
-.status{
-  min-height:20px;
+.status-line{
+  margin-top:17px;
+  min-height:34px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  color:var(--muted);
+  font-size:11px;
   text-align:center;
-  color:#b9d1c4;
-  font-size:11px;
-  margin:14px 0 4px;
 }
 
-footer{
+.status-dot{
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:var(--green);
+  box-shadow:0 0 9px var(--green);
+}
+
+.status-line button{
+  color:var(--gold2);
+  border:0;
+  background:none;
+  text-decoration:underline;
+  font-size:11px;
+  padding:3px;
+}
+
+.utility-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:9px;
+  margin-top:20px;
+}
+
+.utility{
+  padding:13px 5px;
+  border-radius:15px;
+  background:linear-gradient(145deg,#202e43,#131e2e);
+  border:1px solid var(--line);
+  color:var(--text);
   text-align:center;
-  color:#9baea8;
+  box-shadow:0 5px 12px #0004,inset 0 1px 1px #ffffff10;
   font-size:11px;
-  line-height:1.7;
-  margin:17px 0 2px;
 }
 
-.sparkle{
-  color:#e5c987;
-  text-shadow:0 0 8px #e5c98760;
+.utility span{
+  display:block;
+  font-size:21px;
+  margin-bottom:5px;
 }
 
-/* ===== Animations ===== */
-
-@keyframes appear{
-  from{
-    opacity:0;
-    transform:translateY(8px) scale(.985);
-  }
-  to{
-    opacity:1;
-    transform:translateY(0) scale(1);
-  }
+.footer{
+  text-align:center;
+  color:#657286;
+  font-family:'Cormorant Garamond',serif;
+  font-size:12px;
+  letter-spacing:2px;
+  margin-top:32px;
 }
 
-@keyframes pop{
-  0%{transform:scale(.97);opacity:.65}
-  65%{transform:scale(1.015)}
-  100%{transform:scale(1);opacity:1}
+.modal-backdrop{
+  position:fixed;
+  inset:0;
+  z-index:50;
+  display:none;
+  align-items:flex-end;
+  justify-content:center;
+  padding:14px;
+  background:rgba(3,7,14,.76);
+  backdrop-filter:blur(8px);
 }
 
-.card.changed{
-  animation:pop .32s ease;
+.modal-backdrop.show{display:flex}
+
+.modal{
+  width:min(100%,560px);
+  max-height:85vh;
+  overflow:auto;
+  padding:22px;
+  border-radius:23px;
+  border:1px solid var(--line);
+  background:linear-gradient(145deg,#202d42,#101927);
+  box-shadow:0 20px 60px #000b;
+  animation:rise .2s ease-out;
 }
 
-/* ===== Hover effects ===== */
-
-@media(hover:hover){
-  .btn:hover{
-    filter:brightness(1.15);
-    transform:translateY(-2px);
-  }
-
-  .btn.primary:hover{
-    box-shadow:
-      0 6px 0 #123327,
-      0 9px 17px #0007,
-      0 0 18px #8fc6a444,
-      inset 0 1px 0 #ffffff55;
-  }
+@keyframes rise{
+  from{transform:translateY(20px);opacity:0}
+  to{transform:translateY(0);opacity:1}
 }
 
-/* ===== Responsive ===== */
-
-@media(min-width:520px){
-  body{padding:24px}
-  .app{padding:21px}
-  .mascot svg{
-    width:165px;
-    height:125px;
-  }
+.modal-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:16px;
 }
 
-@media(max-width:360px){
-  body{padding:8px}
-  .app{
-    padding:12px;
-    border-radius:19px;
-  }
-  .mascot{
-    gap:7px;
-    padding:9px;
-  }
-  .mascot svg{
-    width:115px;
-    height:100px;
-  }
-  .speech{
-    font-size:11px;
-    padding:9px;
-  }
-  .btn{
-    font-size:12px;
-    padding:10px 7px;
-  }
+.modal-title{
+  font-size:18px;
+  font-weight:600;
 }
 
-@media(prefers-reduced-motion:reduce){
-  *,*:before,*:after{
-    animation-duration:.01ms!important;
-    transition-duration:.01ms!important;
-  }
+.close-btn{
+  width:34px;
+  height:34px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  color:var(--text);
+  background:#ffffff0b;
+}
+
+.field{
+  width:100%;
+  padding:12px 14px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:#0d1725;
+  color:var(--text);
+  outline:none;
+  margin:8px 0;
+  font-size:13px;
+}
+
+.field:focus{border-color:var(--gold)}
+
+.ingredient-list{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin:12px 0;
+}
+
+.ingredient{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  padding:7px 11px;
+  border:1px solid var(--line);
+  border-radius:30px;
+  background:#ffffff08;
+  color:#d9e0e8;
+  font-size:11px;
+}
+
+.recipe-list{
+  padding-left:22px;
+  color:#cbd4df;
+  font-size:13px;
+  line-height:2;
+}
+
+.recipe-title{
+  font-weight:600;
+  color:var(--gold2);
+  margin:15px 0 5px;
+}
+
+.favorite-item{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:12px 0;
+  border-bottom:1px solid var(--line);
+  font-size:13px;
+}
+
+.favorite-item button{
+  border:0;
+  background:none;
+  color:#e39ba4;
+  font-size:17px;
+}
+
+.setting-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:13px 0;
+  border-bottom:1px solid var(--line);
+  font-size:13px;
+}
+
+.setting-row input[type=range]{width:120px;accent-color:var(--gold)}
+
+.switch{
+  width:43px;
+  height:24px;
+  appearance:none;
+  background:#394456;
+  border-radius:20px;
+  position:relative;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.switch:before{
+  content:"";
+  width:18px;
+  height:18px;
+  position:absolute;
+  top:3px;
+  left:3px;
+  background:#fff;
+  border-radius:50%;
+  transition:.2s;
+}
+
+.switch:checked{background:#5baf91}
+.switch:checked:before{left:22px}
+
+.toast{
+  position:fixed;
+  z-index:80;
+  left:50%;
+  bottom:25px;
+  transform:translate(-50%,20px);
+  opacity:0;
+  pointer-events:none;
+  padding:11px 18px;
+  border:1px solid var(--line);
+  border-radius:30px;
+  background:#202d40;
+  color:var(--text);
+  box-shadow:0 8px 25px #0008;
+  font-size:12px;
+  transition:.25s;
+  white-space:nowrap;
+}
+
+.toast.show{
+  opacity:1;
+  transform:translate(-50%,0);
+}
+
+@media(min-width:600px){
+  .app{padding-top:30px}
+  .modal-backdrop{align-items:center}
+}
+
+@media(max-width:370px){
+  .app{padding-left:12px;padding-right:12px}
+  .card{padding:18px 13px}
+  .dish-name{font-size:22px}
+  .utility-grid{gap:6px}
+}
 </style>
 </head>
+
 <body>
-<main class="app">
-<header>
-  <div class="brand">✦ PIXEL FOOD AI ✦</div>
-  <div class="online">● READY</div>
-</header>
+<div class="app">
 
-<div class="sub">วันนี้กินอะไรดี?</div>
-<div class="tagline">คิดเมนูให้อร่อย ง่ายกว่าที่คิด ♡</div>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">✦</div>
+      <div>
+        <div class="brand-name">PIXEL FOOD AI</div>
+        <div class="brand-sub">YOUR DAILY FOOD COMPANION</div>
+      </div>
+    </div>
+    <button class="icon-btn" id="settingsBtn" aria-label="ตั้งค่า">⚙</button>
+  </header>
 
-<section class="mascot">
-<svg viewBox="0 0 220 140" role="img" aria-label="ซิลทิสและงูดำ">
-  <rect x="42" y="83" width="62" height="48" fill="#182344"/>
-  <rect x="50" y="75" width="46" height="15" fill="#283c70"/>
-  <rect x="43" y="96" width="14" height="35" fill="#243c70"/>
-  <rect x="91" y="96" width="13" height="35" fill="#243c70"/>
-  <rect x="68" y="91" width="9" height="40" fill="#72dfff"/>
-  <rect x="61" y="101" width="22" height="5" fill="#a77aff"/>
-  <rect x="56" y="30" width="36" height="38" fill="#bd896e"/>
-  <rect x="50" y="38" width="7" height="20" fill="#bd896e"/>
-  <rect x="91" y="38" width="7" height="20" fill="#bd896e"/>
-  <rect x="62" y="48" width="7" height="4" fill="#7d253e"/>
-  <rect x="81" y="48" width="7" height="4" fill="#7d253e"/>
-  <rect x="73" y="58" width="7" height="3" fill="#713d42"/>
-  <rect x="49" y="20" width="49" height="15" fill="#dce5f5"/>
-  <rect x="44" y="28" width="12" height="25" fill="#b8c6df"/>
-  <rect x="92" y="28" width="12" height="22" fill="#b8c6df"/>
-  <rect x="56" y="14" width="35" height="9" fill="#edf3ff"/>
-  <rect x="95" y="19" width="15" height="8" fill="#dce5f5"/>
-  <rect x="106" y="24" width="8" height="35" fill="#b8c6df"/>
-  <rect x="112" y="51" width="7" height="27" fill="#dce5f5"/>
-  <rect x="145" y="88" width="43" height="12" fill="#080b19"/>
-  <rect x="163" y="76" width="12" height="20" fill="#080b19"/>
-  <rect x="174" y="62" width="12" height="20" fill="#080b19"/>
-  <rect x="162" y="53" width="24" height="12" fill="#080b19"/>
-  <rect x="151" y="58" width="16" height="10" fill="#080b19"/>
-  <rect x="143" y="70" width="12" height="19" fill="#080b19"/>
-  <rect x="177" y="56" width="4" height="4" fill="#a77aff"/>
-  <rect x="185" y="56" width="4" height="4" fill="#a77aff"/>
-  <rect x="179" y="66" width="8" height="3" fill="#633e9c"/>
-  <rect x="138" y="95" width="12" height="7" fill="#080b19"/>
-  <rect x="190" y="91" width="8" height="8" fill="#080b19"/>
-</svg>
-<div class="speech" id="speech">สวัสดีครับ! กดสุ่มเมนูแล้วมาหาของอร่อยกันนะ</div>
-</section>
+  <section class="hero">
+    <div class="eyebrow">A LITTLE MAGIC EVERYDAY</div>
+    <h1>วันนี้กินอะไรดี?</h1>
+    <p>ให้ซิลทิสช่วยค้นพบมื้ออาหารของคุณ</p>
 
-<section class="card" id="dishCard">
-  <div class="card-head">
-    <div class="kicker">✧ เมนูแนะนำ ✧</div>
-    <div class="origin" id="origin">รอเลือกเมนู</div>
-  </div>
-  <div class="placeholder" id="dish">วันนี้จะกินอะไรดีนะ?</div>
-  <div class="desc" id="desc">กดปุ่มสุ่มเมนูเพื่อให้เชฟช่วยเลือกให้เลย</div>
-  <div class="ingredients">
-    <b>✿ วัตถุดิบที่ใช้</b>
-    <div id="items">เมนูและวัตถุดิบจะแสดงตรงนี้</div>
-  </div>
-  <div class="row">
-    <button class="btn primary" id="recipeBtn" disabled>ดูวิธีทำ ✧</button>
-    <button class="btn" id="favBtn" disabled>♡ เมนูโปรด</button>
-  </div>
-  <div class="recipe" id="recipe"></div>
-</section>
+    <div class="mascot-stage">
+      <div class="mascot-glow"></div>
+      <div class="mascot">
+        <!-- ภาพตกแต่งตัวละครชั่วคราวในตัวไฟล์ -->
+        <svg viewBox="0 0 180 180" role="img" aria-label="ตัวละครนักสำรวจ">
+          <defs>
+            <linearGradient id="coat" x1="0" y1="0" x2="1" y2="1">
+              <stop stop-color="#e3e1e7"/>
+              <stop offset=".45" stop-color="#858b9e"/>
+              <stop offset="1" stop-color="#3a4357"/>
+            </linearGradient>
+            <linearGradient id="hair" x1="0" y1="0" x2="1" y2="1">
+              <stop stop-color="#fff"/>
+              <stop offset=".55" stop-color="#bfc5d2"/>
+              <stop offset="1" stop-color="#737e91"/>
+            </linearGradient>
+            <linearGradient id="skin" x1="0" y1="0" x2="1" y2="1">
+              <stop stop-color="#d8a77e"/>
+              <stop offset="1" stop-color="#9b654d"/>
+            </linearGradient>
+          </defs>
+          <ellipse cx="90" cy="164" rx="49" ry="8" fill="#000" opacity=".3"/>
+          <path d="M48 164 Q49 120 68 110 L112 110 Q135 123 137 164Z" fill="url(#coat)" stroke="#c6b58d" stroke-width="1.5"/>
+          <path d="M74 113 L90 145 L106 113 L99 164 L81 164Z" fill="#202b40"/>
+          <path d="M80 114 L90 132 L100 114" fill="none" stroke="#d8c08f" stroke-width="2"/>
+          <path d="M59 130 L39 157 L48 163 L72 139" fill="url(#coat)" stroke="#b9b6b2"/>
+          <path d="M119 130 L140 155 L132 163 L108 140" fill="url(#coat)" stroke="#b9b6b2"/>
+          <path d="M63 67 Q59 35 90 30 Q125 33 119 78 L113 109 Q91 127 67 105Z" fill="url(#skin)"/>
+          <path d="M60 72 Q45 25 90 18 Q132 19 123 76 Q116 53 101 45 Q86 57 61 58Z" fill="url(#hair)"/>
+          <path d="M65 57 Q43 83 62 111 Q72 120 78 113 L73 78Z" fill="url(#hair)"/>
+          <path d="M112 49 Q135 73 116 111 Q109 117 104 110 L109 74Z" fill="url(#hair)"/>
+          <path d="M79 78 Q84 72 89 78" stroke="#482c2b" stroke-width="2" fill="none"/>
+          <path d="M98 78 Q104 72 109 78" stroke="#482c2b" stroke-width="2" fill="none"/>
+          <ellipse cx="84" cy="84" rx="4" ry="5" fill="#7f273a"/>
+          <ellipse cx="104" cy="84" rx="4" ry="5" fill="#7f273a"/>
+          <circle cx="85" cy="83" r="1.4" fill="#fff"/>
+          <circle cx="105" cy="83" r="1.4" fill="#fff"/>
+          <path d="M89 99 Q96 104 102 98" stroke="#70433d" stroke-width="1.5" fill="none"/>
+          <path d="M118 38 Q137 46 145 29 Q141 54 119 60" fill="url(#hair)"/>
+          <path d="M70 112 L90 124 L110 112" fill="none" stroke="#d8c08f" stroke-width="2"/>
+          <circle cx="90" cy="137" r="3" fill="#d8c08f"/>
+          <path d="M51 153 L37 162 M129 153 L143 162" stroke="#c9a96e" stroke-width="2"/>
+        </svg>
+      </div>
 
-<div class="section-title">✧ เลือกแนวเมนูที่อยากกิน</div>
-<div class="filters" id="filters">
-  <button class="btn active" data-filter="all">🍱 ทั้งหมด</button>
-  <button class="btn" data-filter="rice">🍚 ข้าว</button>
-  <button class="btn" data-filter="noodle">🍜 เส้น</button>
+      <div class="companion">
+        <svg viewBox="0 0 100 100" role="img" aria-label="งูดำ Black">
+          <defs>
+            <linearGradient id="snake" x1="0" y1="0" x2="1" y2="1">
+              <stop stop-color="#566071"/>
+              <stop offset=".5" stop-color="#171e2c"/>
+              <stop offset="1" stop-color="#05080e"/>
+            </linearGradient>
+          </defs>
+          <path d="M18 79 Q5 56 25 44 Q45 33 60 52 Q74 70 53 76 Q35 81 36 62 Q38 49 57 42 Q77 34 79 17" fill="none" stroke="url(#snake)" stroke-width="16" stroke-linecap="round"/>
+          <path d="M18 79 Q5 56 25 44 Q45 33 60 52 Q74 70 53 76" fill="none" stroke="#a4aaba" stroke-opacity=".25" stroke-width="2"/>
+          <path d="M71 19 Q75 6 91 11 Q98 22 85 31 L74 27Z" fill="#111827" stroke="#596274" stroke-width="1.5"/>
+          <circle cx="85" cy="17" r="2.5" fill="#d64c5d"/>
+          <circle cx="85.5" cy="16.5" r=".8" fill="#fff"/>
+          <path d="M88 26 L95 29" stroke="#d64c5d" stroke-width="1.5"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <main>
+    <section class="card">
+      <div class="card-label">✦ THE DAILY DISCOVERY ✦</div>
+
+      <div class="dish-display" id="dishDisplay">
+        <div class="empty-dish">พร้อมแล้วหรือยัง? กดสุ่มเพื่อค้นพบมื้ออาหาร</div>
+      </div>
+
+      <button class="main-btn" id="randomBtn">✧ สุ่มเมนูอาหาร ✧</button>
+
+      <div class="secondary-row">
+        <button class="action-btn green" id="confirmBtn" disabled>✓ อันนี้แหละ!</button>
+        <button class="action-btn" id="recipeBtn" disabled>♨ ดูวิธีทำ</button>
+      </div>
+
+      <div class="secondary-row">
+        <button class="action-btn gold" id="favoriteBtn" disabled>♡ เพิ่มเมนูโปรด</button>
+        <button class="action-btn red" id="rerollBtn" disabled>↻ สุ่มใหม่</button>
+      </div>
+
+      <div class="status-line" id="statusLine">
+        <span class="status-dot"></span>
+        <span>เลือกเมนูที่ถูกใจ แล้วกดยืนยันได้เลย</span>
+      </div>
+    </section>
+
+    <section class="filter-area">
+      <div class="section-heading">เลือกประเภทเมนู</div>
+      <div class="pills" id="typeFilters">
+        <button class="pill active" data-type="all">ทั้งหมด</button>
+        <button class="pill" data-type="rice">🍚 เมนูข้าว</button>
+        <button class="pill" data-type="noodle">🍜 เมนูเส้น</button>
+      </div>
+    </section>
+
+    <section class="filter-area">
+      <div class="section-heading">รูปแบบการสุ่ม</div>
+      <div class="pills" id="modeFilters">
+        <button class="pill active" data-mode="normal">ปกติ</button>
+        <button class="pill" data-mode="budget">ประหยัด</button>
+        <button class="pill" data-mode="world">นานาชาติ</button>
+      </div>
+    </section>
+
+    <section class="utility-grid">
+      <button class="utility" id="fridgeBtn"><span>🧊</span>วัตถุดิบในตู้เย็น</button>
+      <button class="utility" id="favoritesBtn"><span>♡</span>เมนูโปรด</button>
+      <button class="utility" id="soundBtn"><span>♫</span>เสียงประกอบ</button>
+    </section>
+  </main>
+
+  <footer class="footer">EXPLORE · TASTE · ENJOY</footer>
 </div>
 
-<div class="controls">
-  <button class="btn primary control-btn" id="randomBtn">🎲 สุ่มเมนูใหม่</button>
-  <button class="btn control-btn" id="fridgeBtn">🧊 จากของที่มี</button>
-  <button class="btn control-btn" id="budgetBtn">🪙 เมนูประหยัด</button>
-  <button class="btn pink control-btn" id="worldBtn">🌏 เมนูต่างประเทศ</button>
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal" id="modalContent">
+    <div class="modal-head">
+      <div class="modal-title" id="modalTitle"></div>
+      <button class="close-btn" id="closeModal">✕</button>
+    </div>
+    <div id="modalBody"></div>
+  </div>
 </div>
 
-<div class="sound-box">
-  <span class="sound-label">♫ เสียงเอฟเฟกต์</span>
-  <button class="btn sound-toggle" id="soundToggle">เปิดเสียง</button>
-  <label class="tiny" for="volume">ระดับเสียง</label>
-  <input id="volume" type="range" min="0" max="100" value="45">
-</div>
-
-<div class="status" id="status" aria-live="polite">ข้าว 50% · เส้น 50% · พร้อมเสิร์ฟความอร่อย!</div>
-<footer><span class="sparkle">✦</span> เชฟน้อยและน้องงูดำ ขอให้มื้อนี้อร่อยนะ ♡ <span class="sparkle">✦</span></footer>
-</main>
+<div class="toast" id="toast"></div>
 
 <script>
-const foods=[
-/* ==================== เมนูข้าว 18 เมนู ==================== */
-{name:"ข้าวกะเพราหมูไข่ดาว",type:"rice",origin:"ไทย",desc:"เมนูคลาสสิก หอมกะเพราและไข่ดาว",items:"หมู • ไข่ • ข้าว • กะเพรา",recipe:"1. ผัดกระเทียมและพริกให้หอม\n2. ใส่หมู ผัดจนสุกแล้วปรุงรส\n3. ใส่ใบกะเพรา เสิร์ฟพร้อมข้าวและไข่ดาว",budget:false},
-{name:"ข้าวไก่กระเทียม",type:"rice",origin:"ไทย",desc:"ไก่ผัดกระเทียมหอม ๆ กินง่าย",items:"ไก่ • ข้าว • กระเทียม • ซีอิ๊ว",recipe:"1. ผัดกระเทียมให้หอม\n2. ใส่ไก่ ผัดจนสุก\n3. ปรุงรสด้วยซีอิ๊ว เสิร์ฟกับข้าว",budget:false},
-{name:"ข้าวผัดไข่",type:"rice",origin:"ไทย",desc:"เมนูง่าย ๆ วัตถุดิบน้อย",items:"ข้าว • ไข่ • ต้นหอม • เครื่องปรุง",recipe:"1. ผัดไข่ให้พอสุก\n2. ใส่ข้าวลงไปผัด\n3. ปรุงรสและใส่ต้นหอม",budget:true},
-{name:"ข้าวต้มหมู",type:"rice",origin:"ไทย",desc:"ข้าวต้มร้อน ๆ เหมาะกับทุกมื้อ",items:"หมู • ข้าว • กระเทียม • ขึ้นฉ่าย",recipe:"1. ต้มน้ำซุปให้เดือด\n2. ใส่หมูและข้าว ต้มจนสุก\n3. ปรุงรส โรยกระเทียมเจียว",budget:false},
-{name:"ข้าวไข่ข้น",type:"rice",origin:"ไทยประยุกต์",desc:"ไข่นุ่ม ๆ ราดบนข้าวสวย",items:"ไข่ • ข้าว • นม • เครื่องปรุง",recipe:"1. ตีไข่กับนมเล็กน้อย\n2. ตั้งกระทะไฟอ่อน คนไข่จนเริ่มข้น\n3. ราดบนข้าวสวย",budget:true},
-{name:"ข้าวขาหมู",type:"rice",origin:"ไทย-จีน",desc:"ขาหมูตุ๋นเนื้อนุ่มกับน้ำพะโล้",items:"ขาหมู • ข้าว • ไข่พะโล้ • ผักกาดดอง",recipe:"1. ตุ๋นขาหมูกับเครื่องพะโล้จนเปื่อย\n2. ปรุงรสน้ำตุ๋นให้กลมกล่อม\n3. หั่นขาหมูเสิร์ฟพร้อมข้าว",budget:false},
-{name:"ข้าวหมูแดง",type:"rice",origin:"ไทย-จีน",desc:"หมูแดงหอม ๆ ราดน้ำซอส",items:"หมูแดง • ข้าว • แตงกวา • น้ำราด",recipe:"1. หมักหมูกับเครื่องหมูแดง\n2. อบหรือย่างจนสุก\n3. หั่นเสิร์ฟบนข้าว ราดน้ำซอส",budget:false},
-{name:"ข้าวมันไก่",type:"rice",origin:"ไทย-จีน",desc:"ไก่นุ่มกับข้าวมันหอม ๆ",items:"ไก่ • ข้าว • ขิง • กระเทียม • แตงกวา",recipe:"1. ต้มไก่จนสุก\n2. หุงข้าวด้วยน้ำต้มไก่และเครื่องหอม\n3. จัดเสิร์ฟพร้อมน้ำจิ้ม",budget:false},
-{name:"ข้าวหมูกระเทียม",type:"rice",origin:"ไทย",desc:"หมูผัดกระเทียมรสเข้มข้น",items:"หมู • ข้าว • กระเทียม • พริกไทย",recipe:"1. หมักหมูกับซีอิ๊วและพริกไทย\n2. ผัดกระเทียมให้หอม\n3. ใส่หมูผัดจนสุก เสิร์ฟกับข้าว",budget:false},
-{name:"ข้าวผัดกุ้ง",type:"rice",origin:"ไทย",desc:"ข้าวผัดหอมกระทะพร้อมกุ้ง",items:"กุ้ง • ข้าว • ไข่ • ต้นหอม",recipe:"1. ผัดกุ้งจนสุก\n2. ใส่ไข่และข้าวลงผัด\n3. ปรุงรสแล้วใส่ต้นหอม",budget:false},
-{name:"ข้าวผัดอเมริกัน",type:"rice",origin:"ไทยประยุกต์",desc:"ข้าวผัดซอสมะเขือเทศกับเครื่องเคียง",items:"ข้าว • ไข่ • ไส้กรอก • ไก่ • ซอสมะเขือเทศ",recipe:"1. ผัดข้าวกับซอสมะเขือเทศ\n2. ทอดไข่และไส้กรอกให้สุก\n3. จัดเสิร์ฟพร้อมไก่ทอด",budget:false},
-{name:"ข้าวหน้าไก่เทอริยากิ",type:"rice",origin:"ญี่ปุ่น",desc:"ไก่เคลือบซอสหวานเค็ม",items:"ไก่ • ข้าว • ซีอิ๊วญี่ปุ่น • น้ำตาล",recipe:"1. ย่างหรือจี่ไก่จนสุก\n2. เติมซอสเทอริยากิ เคี่ยวจนเคลือบไก่\n3. หั่นเสิร์ฟบนข้าว",budget:false,world:true},
-{name:"ข้าวแกงกะหรี่ญี่ปุ่น",type:"rice",origin:"ญี่ปุ่น",desc:"แกงกะหรี่ข้น ๆ กินกับข้าวสวย",items:"เนื้อหรือไก่ • ข้าว • มันฝรั่ง • แครอต • ก้อนแกงกะหรี่",recipe:"1. ผัดเนื้อสัตว์กับผัก\n2. เติมน้ำและเคี่ยวจนผักนุ่ม\n3. ใส่ก้อนแกงกะหรี่ คนจนข้น เสิร์ฟกับข้าว",budget:false,world:true},
-{name:"ข้าวหน้าหมูทงคัตสึ",type:"rice",origin:"ญี่ปุ่น",desc:"หมูชุบเกล็ดขนมปังกรอบ",items:"หมู • ข้าว • ไข่ • เกล็ดขนมปัง",recipe:"1. ชุบหมูด้วยแป้ง ไข่ และเกล็ดขนมปัง\n2. ทอดจนสุกเหลือง\n3. หั่นเสิร์ฟพร้อมข้าวและซอส",budget:false,world:true},
-{name:"ข้าวหน้าเนื้อญี่ปุ่น",type:"rice",origin:"ญี่ปุ่น",desc:"เนื้อสไลซ์ผัดซอสหวานเค็ม",items:"เนื้อวัว • ข้าว • หอมหัวใหญ่ • ซีอิ๊วญี่ปุ่น",recipe:"1. ผัดหอมหัวใหญ่ให้นุ่ม\n2. ใส่เนื้อและซอส ปรุงจนสุก\n3. ราดบนข้าวสวย",budget:false,world:true},
-{name:"ข้าวผัดกิมจิ",type:"rice",origin:"เกาหลี",desc:"ข้าวผัดรสเปรี้ยวเผ็ดหอมกิมจิ",items:"ข้าว • กิมจิ • ไข่ • หมู",recipe:"1. ผัดหมูให้สุก\n2. ใส่กิมจิและข้าวลงผัด\n3. ปรุงรส เสิร์ฟพร้อมไข่ดาว",budget:false,world:true},
-{name:"ข้าวหน้าไก่ย่างซอสเกาหลี",type:"rice",origin:"เกาหลี",desc:"ไก่ย่างซอสโคชูจังรสเข้มข้น",items:"ไก่ • ข้าว • โคชูจัง • งา",recipe:"1. หมักไก่ด้วยโคชูจังและเครื่องปรุง\n2. ย่างหรือจี่จนไก่สุก\n3. หั่นเสิร์ฟบนข้าว โรยงา",budget:false,world:true},
-{name:"ข้าวผัดกุนเชียง",type:"rice",origin:"ไทย-จีน",desc:"หอมกุนเชียง รสหวานเค็ม",items:"ข้าว • กุนเชียง • ไข่ • ต้นหอม",recipe:"1. ผัดกุนเชียงให้หอม\n2. ใส่ไข่และข้าวลงผัด\n3. ปรุงรสและใส่ต้นหอม",budget:true},
+"use strict";
 
-/* ==================== เมนูเส้น 18 เมนู ==================== */
-{name:"มาม่าผัดไข่",type:"noodle",origin:"ไทยประยุกต์",desc:"เมนูเส้นง่าย ๆ ใช้วัตถุดิบน้อย",items:"บะหมี่กึ่งสำเร็จรูป • ไข่ • เครื่องปรุง",recipe:"1. ลวกเส้นพอสุกแล้วพักไว้\n2. ผัดไข่ให้สุก ใส่เส้น\n3. เติมเครื่องปรุง คลุกให้เข้ากัน",budget:true},
-{name:"บะหมี่หมูผัดกระเทียม",type:"noodle",origin:"ไทยประยุกต์",desc:"เส้นคลุกหมูกระเทียมหอม ๆ",items:"เส้นบะหมี่ • หมู • กระเทียม • ซีอิ๊ว",recipe:"1. ลวกเส้นให้สุก\n2. ผัดหมูกับกระเทียมจนสุก\n3. ใส่เส้นและปรุงรส",budget:false},
-{name:"บะหมี่น้ำหมู",type:"noodle",origin:"ไทย",desc:"บะหมี่น้ำซุปร้อน ๆ",items:"เส้นบะหมี่ • หมู • น้ำซุป • ผักกวางตุ้ง",recipe:"1. เตรียมน้ำซุปให้เดือด\n2. ต้มหมูจนสุก\n3. ลวกเส้นและผัก จัดใส่ชาม",budget:false},
-{name:"ผัดซีอิ๊วหมู",type:"noodle",origin:"ไทย",desc:"เส้นใหญ่ผัดซีอิ๊วหอมกระทะ",items:"เส้นใหญ่ • หมู • ไข่ • คะน้า • ซีอิ๊ว",recipe:"1. ผัดหมูจนสุก\n2. ใส่ไข่ เส้นใหญ่ และผัก\n3. ปรุงซีอิ๊ว ผัดให้หอม",budget:false},
-{name:"ผัดขี้เมาหมู",type:"noodle",origin:"ไทย",desc:"เส้นผัดรสจัดจ้าน หอมสมุนไพร",items:"เส้น • หมู • พริก • กระเทียม • กะเพรา",recipe:"1. ผัดพริกและกระเทียมให้หอม\n2. ใส่หมูและเส้น ผัดจนสุก\n3. ปรุงรส ใส่ใบกะเพรา",budget:false},
-{name:"ราดหน้าหมู",type:"noodle",origin:"ไทย-จีน",desc:"เส้นนุ่มกับน้ำราดหน้าข้นกลมกล่อม",items:"เส้นใหญ่ • หมู • คะน้า • แป้งมัน",recipe:"1. ผัดเส้นให้หอมแล้วพักไว้\n2. ต้มน้ำซุป ใส่หมูและผัก\n3. ปรุงรสและเติมแป้งมันให้ข้น",budget:false},
-{name:"สุกี้น้ำหมู",type:"noodle",origin:"ไทย",desc:"น้ำซุปร้อน ๆ กับวุ้นเส้นและน้ำจิ้มสุกี้",items:"วุ้นเส้น • หมู • ไข่ • ผักกาดขาว • น้ำจิ้มสุกี้",recipe:"1. ต้มน้ำซุปให้เดือด\n2. ใส่หมู ผัก และวุ้นเส้น\n3. ใส่ไข่ ปรุงรสและเสิร์ฟ",budget:false},
-{name:"สุกี้แห้งหมู",type:"noodle",origin:"ไทย",desc:"สุกี้ผัดแห้งคลุกน้ำจิ้ม",items:"วุ้นเส้น • หมู • ไข่ • ผักกาดขาว • น้ำจิ้มสุกี้",recipe:"1. ผัดหมูให้สุก\n2. ใส่ไข่ ผัก และวุ้นเส้น\n3. เติมน้ำจิ้มสุกี้ ผัดให้เข้ากัน",budget:false},
-{name:"ก๋วยเตี๋ยวต้มยำ",type:"noodle",origin:"ไทย",desc:"น้ำซุปต้มยำรสเปรี้ยวเผ็ด",items:"เส้นก๋วยเตี๋ยว • หมู • ถั่วลิสง • มะนาว",recipe:"1. เตรียมน้ำซุปและปรุงรสต้มยำ\n2. ลวกเส้นและเนื้อสัตว์\n3. จัดใส่ชาม เติมเครื่องต้มยำ",budget:false},
-{name:"ก๋วยเตี๋ยวคั่วไก่",type:"noodle",origin:"ไทย",desc:"เส้นใหญ่คั่วกระทะหอม ๆ",items:"เส้นใหญ่ • ไก่ • ไข่ • ปลาหมึกกรอบ",recipe:"1. ผัดไก่จนสุก\n2. ใส่เส้นและไข่ คั่วให้หอม\n3. ปรุงรสตามชอบ",budget:false},
-{name:"สปาเกตตีซอสมะเขือเทศ",type:"noodle",origin:"อิตาลี",desc:"เส้นสปาเกตตีคลุกซอสมะเขือเทศ",items:"เส้นสปาเกตตี • ซอสมะเขือเทศ • หมูสับ • หอมหัวใหญ่",recipe:"1. ต้มเส้นสปาเกตตีจนสุก\n2. ผัดหมูสับกับหอมหัวใหญ่ เติมซอสมะเขือเทศ\n3. คลุกเส้นกับซอสให้เข้ากัน",budget:false,world:true},
-{name:"สปาเกตตีคาโบนารา",type:"noodle",origin:"อิตาลี",desc:"พาสตาซอสครีมเข้มข้น",items:"เส้นสปาเกตตี • เบคอน • ไข่ • ชีส • ครีม",recipe:"1. ต้มเส้นจนสุก\n2. ผัดเบคอนให้หอม\n3. คลุกเส้นกับส่วนผสมไข่ ชีส และครีม",budget:false,world:true},
-{name:"สปาเกตตีผัดขี้เมา",type:"noodle",origin:"ไทยประยุกต์",desc:"พาสตาผัดรสจัดจ้านแบบไทย",items:"เส้นสปาเกตตี • หมูหรือไก่ • พริก • กระเทียม • กะเพรา",recipe:"1. ต้มเส้นสปาเกตตีจนสุก\n2. ผัดพริก กระเทียม และเนื้อสัตว์\n3. ใส่เส้น ปรุงรสและใส่กะเพรา",budget:false},
-{name:"สปาเกตตีผัดพริกแห้งเบคอน",type:"noodle",origin:"อิตาลีประยุกต์",desc:"พาสต้าผัดกระเทียมพริกแห้งหอม ๆ",items:"เส้นสปาเกตตี • เบคอน • กระเทียม • พริกแห้ง",recipe:"1. ต้มเส้นให้สุก\n2. ผัดกระเทียม พริกแห้ง และเบคอน\n3. ใส่เส้น คลุกให้เข้ากัน",budget:false,world:true},
-{name:"ยากิโซบะ",type:"noodle",origin:"ญี่ปุ่น",desc:"เส้นผัดซอสสไตล์ญี่ปุ่น",items:"เส้นยากิโซบะ • หมู • กะหล่ำปลี • แครอต • ซอส",recipe:"1. ผัดหมูให้สุก\n2. ใส่ผักและเส้น\n3. เติมซอสยากิโซบะ ผัดให้เข้ากัน",budget:false,world:true},
-{name:"ราเมนหมู",type:"noodle",origin:"ญี่ปุ่น",desc:"ราเมนน้ำซุปเข้มข้นพร้อมหมู",items:"เส้นราเมน • หมู • ไข่ • ต้นหอม • น้ำซุป",recipe:"1. เตรียมน้ำซุปให้ร้อน\n2. ลวกเส้นราเมน\n3. จัดเส้นใส่ชาม เติมหมูและเครื่องเคียง",budget:false,world:true},
-{name:"อุด้งผัดซอส",type:"noodle",origin:"ญี่ปุ่น",desc:"เส้นอุด้งเหนียวนุ่มผัดซอส",items:"เส้นอุด้ง • หมู • หอมหัวใหญ่ • ซีอิ๊วญี่ปุ่น",recipe:"1. ผัดหมูกับหอมหัวใหญ่\n2. ใส่เส้นอุด้ง\n3. ปรุงด้วยซอสและผัดให้เข้ากัน",budget:false,world:true},
-{name:"จาจังมยอน",type:"noodle",origin:"เกาหลี",desc:"บะหมี่ซอสดำสไตล์เกาหลี",items:"เส้นบะหมี่ • หมู • หอมหัวใหญ่ • ซอสถั่วดำ",recipe:"1. ผัดหมูกับหอมหัวใหญ่\n2. เติมซอสถั่วดำและน้ำเล็กน้อย\n3. เคี่ยวจนข้น ราดบนเส้นบะหมี่",budget:false,world:true}
+/* ==========================================
+   FOOD DATABASE : 36 เมนู
+========================================== */
+
+const foods = [
+{
+ name:"ข้าวกะเพราหมูสับ",type:"rice",origin:"ไทย",
+ emoji:"🍛",desc:"หมูสับผัดกะเพราหอม ๆ รสจัดจ้าน",
+ items:["ข้าวสวย","หมูสับ","ใบกะเพรา","กระเทียม","พริก","ซอสปรุงรส"],
+ recipe:["สับกระเทียมและพริกให้พอหยาบ","ตั้งกระทะใส่น้ำมันเล็กน้อย ผัดกระเทียมและพริก","ใส่หมูสับ ผัดจนสุก","ปรุงรสด้วยซอสตามชอบ","ใส่ใบกะเพรา ผัดเร็ว ๆ แล้วเสิร์ฟกับข้าว"],
+ budget:1,world:false,group:"หมูผัด"
+},
+{
+ name:"ข้าวหมูกระเทียม",type:"rice",origin:"ไทย",
+ emoji:"🍚",desc:"หมูผัดกระเทียมหอม ๆ รสกลมกล่อม",
+ items:["ข้าวสวย","หมู","กระเทียม","พริกไทย","ซอสปรุงรส"],
+ recipe:["หมักหมูกับซอสและพริกไทย","เจียวกระเทียมให้หอม","ใส่หมูลงผัดจนสุก","ปรุงรสเพิ่มตามชอบ","ตักราดข้าว โรยกระเทียมเจียว"],
+ budget:1,world:false,group:"หมูผัด"
+},
+{
+ name:"ข้าวผัดหมู",type:"rice",origin:"ไทย",
+ emoji:"🍳",desc:"ข้าวผัดหอมกระทะพร้อมหมูชิ้น",
+ items:["ข้าวสวย","หมู","ไข่","แครอต","ต้นหอม","ซีอิ๊ว"],
+ recipe:["เตรียมข้าวสวยที่พักให้เย็น","ผัดหมูจนสุก ใส่ไข่ลงไป","ใส่ข้าวและผัก","ปรุงด้วยซีอิ๊วและเครื่องปรุง","ผัดให้เข้ากัน โรยต้นหอม"],
+ budget:1,world:false,group:"ข้าวผัด"
+},
+{
+ name:"ข้าวไข่ข้นกุ้ง",type:"rice",origin:"ไทย",
+ emoji:"🍤",desc:"ไข่นุ่มละมุนกับกุ้งเนื้อเด้ง",
+ items:["ข้าวสวย","ไข่","กุ้ง","นมสด","เนย","พริกไทย"],
+ recipe:["ตีไข่กับนมสดเล็กน้อย","ปรุงกุ้งและทำให้สุกแยกไว้","ตั้งกระทะใส่เนย","เทไข่ลงไป ใช้ไฟอ่อน","คนเบา ๆ ให้ไข่ข้น แล้วราดบนข้าวพร้อมกุ้ง"],
+ budget:2,world:false,group:"ไข่"
+},
+{
+ name:"ข้าวไก่เทอริยากิ",type:"rice",origin:"ญี่ปุ่น",
+ emoji:"🍗",desc:"ไก่ย่างเคลือบซอสเทอริยากิ",
+ items:["ข้าวสวย","เนื้อไก่","ซอสเทอริยากิ","งาขาว","ต้นหอม"],
+ recipe:["หั่นไก่เป็นชิ้นพอดีคำ","ย่างไก่ในกระทะจนสุก","เติมซอสเทอริยากิ","เคี่ยวจนซอสเคลือบไก่","เสิร์ฟบนข้าว โรยงาและต้นหอม"],
+ budget:2,world:true,group:"ไก่"
+},
+{
+ name:"ข้าวหน้าเนื้อ",type:"rice",origin:"ญี่ปุ่น",
+ emoji:"🥩",desc:"เนื้อผัดหอมหวานเค็มสไตล์ญี่ปุ่น",
+ items:["ข้าวสวย","เนื้อวัวสไลซ์","หอมหัวใหญ่","โชยุ","น้ำตาล","ขิง"],
+ recipe:["หั่นหอมหัวใหญ่เป็นเส้น","ผสมโชยุ น้ำตาล น้ำ และขิง","ต้มซอสกับหอมหัวใหญ่","ใส่เนื้อวัวลงไป","ปรุงจนเนื้อสุกแล้วราดบนข้าว"],
+ budget:3,world:true,group:"เนื้อ"
+},
+{
+ name:"ข้าวหมูทงคัตสึ",type:"rice",origin:"ญี่ปุ่น",
+ emoji:"🍱",desc:"หมูชุบเกล็ดขนมปังทอดกรอบ",
+ items:["ข้าวสวย","หมูชิ้น","ไข่","แป้ง","เกล็ดขนมปัง","ซอสทงคัตสึ"],
+ recipe:["ปรุงรสหมูด้วยเกลือและพริกไทย","คลุกแป้ง ชุบไข่ และเกล็ดขนมปัง","ทอดหรือใช้หม้อทอดไร้น้ำมันจนสุก","พักให้คลายร้อนเล็กน้อย","หั่นเป็นชิ้น เสิร์ฟกับข้าวและซอส"],
+ budget:2,world:true,group:"หมูทอด"
+},
+{
+ name:"ข้าวแกงกะหรี่ไก่",type:"rice",origin:"ญี่ปุ่น",
+ emoji:"🍛",desc:"แกงกะหรี่เข้มข้นกับไก่นุ่ม",
+ items:["ข้าวสวย","ไก่","มันฝรั่ง","แครอต","หอมหัวใหญ่","ก้อนแกงกะหรี่"],
+ recipe:["หั่นไก่และผักเป็นชิ้น","ผัดหอมหัวใหญ่และไก่","เติมน้ำและใส่ผัก","ต้มจนทุกอย่างนุ่ม","ปิดไฟ ใส่ก้อนแกงกะหรี่ คนให้ละลายแล้วเคี่ยวต่อ"],
+ budget:2,world:true,group:"แกง"
+},
+{
+ name:"ข้าวหน้าไข่ข้น",type:"rice",origin:"ญี่ปุ่น",
+ emoji:"🍳",desc:"ไข่ข้นนุ่ม ๆ ราดข้าวร้อน ๆ",
+ items:["ข้าวสวย","ไข่","นมสด","เนย","ซีอิ๊ว"],
+ recipe:["ตีไข่กับนมเล็กน้อย","ตั้งกระทะใส่เนย","เทไข่ลงกระทะด้วยไฟอ่อน","คนให้ไข่สุกแบบนุ่ม","ราดลงบนข้าวและปรุงรส"],
+ budget:1,world:false,group:"ไข่"
+},
+{
+ name:"ข้าวหมูผัดซอส",type:"rice",origin:"ไทย",
+ emoji:"🥘",desc:"หมูผัดซอสเข้มข้นกินง่าย",
+ items:["ข้าวสวย","หมู","กระเทียม","ซอสหอยนางรม","ซีอิ๊ว","น้ำตาล"],
+ recipe:["หั่นหมูเป็นชิ้น","ผัดกระเทียมให้หอม","ใส่หมูลงผัดจนสุก","เติมซอสและน้ำเล็กน้อย","ผัดจนซอสเคลือบหมู เสิร์ฟกับข้าว"],
+ budget:1,world:false,group:"หมูผัด"
+},
+{
+ name:"ข้าวผัดกิมจิ",type:"rice",origin:"เกาหลี",
+ emoji:"🥘",desc:"ข้าวผัดรสเปรี้ยวเผ็ดจากกิมจิ",
+ items:["ข้าวสวย","กิมจิ","หมู","ไข่","ต้นหอม","น้ำมันงา"],
+ recipe:["หั่นกิมจิเป็นชิ้นเล็ก","ผัดหมูจนสุก","ใส่กิมจิลงผัด","เติมข้าวและปรุงรส","ผัดให้เข้ากัน เติมน้ำมันงาและเสิร์ฟกับไข่"],
+ budget:2,world:true,group:"ข้าวผัด"
+},
+{
+ name:"ข้าวไก่ทอดซอสเกาหลี",type:"rice",origin:"เกาหลี",
+ emoji:"🍗",desc:"ไก่กรอบคลุกซอสเกาหลีรสเข้ม",
+ items:["ข้าวสวย","ไก่","แป้งทอดกรอบ","โคชูจัง","น้ำผึ้ง","กระเทียม"],
+ recipe:["หั่นไก่เป็นชิ้นและปรุงรส","คลุกแป้งให้ทั่ว","ทอดหรืออบด้วยหม้อทอดไร้น้ำมันจนสุก","ผสมโคชูจัง น้ำผึ้ง และกระเทียม","คลุกไก่กับซอสแล้วเสิร์ฟกับข้าว"],
+ budget:2,world:true,group:"ไก่"
+},
+{
+ name:"ข้าวหมูผัดพริก",type:"rice",origin:"ไทย",
+ emoji:"🌶️",desc:"หมูผัดพริกหอม ๆ รสเผ็ดกำลังดี",
+ items:["ข้าวสวย","หมู","พริก","กระเทียม","หอมหัวใหญ่","ซอสปรุงรส"],
+ recipe:["หั่นหมูและผักเตรียมไว้","ผัดกระเทียมกับพริก","ใส่หมูลงผัดจนสุก","ใส่หอมหัวใหญ่และปรุงรส","ผัดให้เข้ากันแล้วราดข้าว"],
+ budget:1,world:false,group:"หมูผัด"
+},
+{
+ name:"ข้าวผัดปู",type:"rice",origin:"ไทย",
+ emoji:"🦀",desc:"ข้าวผัดหอม ๆ พร้อมเนื้อปู",
+ items:["ข้าวสวย","เนื้อปู","ไข่","ต้นหอม","กระเทียม","ซีอิ๊ว"],
+ recipe:["ผัดกระเทียมให้หอม","ใส่ไข่และข้าวลงผัด","ปรุงด้วยซีอิ๊วเล็กน้อย","ใส่เนื้อปูและผัดอย่างเบามือ","โรยต้นหอมแล้วเสิร์ฟ"],
+ budget:3,world:false,group:"ข้าวผัด"
+},
+{
+ name:"ข้าวไก่กระเทียม",type:"rice",origin:"ไทย",
+ emoji:"🍗",desc:"ไก่ผัดกระเทียมพริกไทย",
+ items:["ข้าวสวย","ไก่","กระเทียม","พริกไทย","ซอสปรุงรส"],
+ recipe:["หั่นไก่เป็นชิ้น","หมักด้วยซอสและพริกไทย","ผัดกระเทียมจนหอม","ใส่ไก่ลงผัดจนสุก","ตักราดข้าว โรยกระเทียมเจียว"],
+ budget:1,world:false,group:"ไก่"
+},
+{
+ name:"ข้าวหน้าหมูย่าง",type:"rice",origin:"ญี่ปุ่น",
+ emoji:"🍖",desc:"หมูย่างหอมซอสบนข้าวสวย",
+ items:["ข้าวสวย","หมูสไลซ์","โชยุ","น้ำผึ้ง","กระเทียม","งาขาว"],
+ recipe:["ผสมโชยุ น้ำผึ้ง และกระเทียม","หมักหมูในซอส","ย่างหมูบนกระทะจนสุก","ทาซอสเพิ่มระหว่างย่าง","หั่นเสิร์ฟบนข้าว โรยงา"],
+ budget:2,world:true,group:"หมูย่าง"
+},
+{
+ name:"ข้าวไข่เจียวหมูสับ",type:"rice",origin:"ไทย",
+ emoji:"🍳",desc:"ไข่เจียวฟูใส่หมูสับ",
+ items:["ข้าวสวย","ไข่","หมูสับ","น้ำปลา","ต้นหอม"],
+ recipe:["ตีไข่กับหมูสับและเครื่องปรุง","ตั้งกระทะใส่น้ำมัน","ทอดไข่จนสุกทั่วถึง","พักให้สะเด็ดน้ำมัน","เสิร์ฟกับข้าวสวย"],
+ budget:1,world:false,group:"ไข่"
+},
+{
+ name:"ข้าวผัดไส้กรอก",type:"rice",origin:"ไทย",
+ emoji:"🌭",desc:"ข้าวผัดไส้กรอกทำง่าย",
+ items:["ข้าวสวย","ไส้กรอก","ไข่","แครอต","ต้นหอม","ซีอิ๊ว"],
+ recipe:["หั่นไส้กรอกเป็นชิ้น","ผัดไส้กรอกให้หอม","ใส่ไข่และข้าว","เติมผักและปรุงรส","ผัดให้เข้ากันแล้วเสิร์ฟ"],
+ budget:1,world:false,group:"ข้าวผัด"
+},
+
+{
+ name:"ผัดซีอิ๊วหมู",type:"noodle",origin:"ไทย",
+ emoji:"🍜",desc:"เส้นใหญ่ผัดซีอิ๊วหอมกระทะ",
+ items:["เส้นใหญ่","หมู","ไข่","คะน้า","ซีอิ๊วดำ","ซีอิ๊วขาว"],
+ recipe:["หมักหมูด้วยซีอิ๊วเล็กน้อย","ผัดหมูให้สุก","ใส่ไข่และเส้นใหญ่","ปรุงด้วยซีอิ๊วดำและซีอิ๊วขาว","ใส่คะน้า ผัดด้วยไฟแรงจนเข้ากัน"],
+ budget:1,world:false,group:"เส้นผัด"
+},
+{
+ name:"ราดหน้าหมู",type:"noodle",origin:"ไทย",
+ emoji:"🍲",desc:"เส้นราดน้ำข้นหมูนุ่ม",
+ items:["เส้นใหญ่","หมู","คะน้า","แป้งมัน","เต้าเจี้ยว","กระเทียม"],
+ recipe:["หมักหมูกับเครื่องปรุง","ผัดเส้นให้หอมแล้วพักไว้","ผัดกระเทียมและหมู","เติมน้ำและปรุงรส","ใส่คะน้าและแป้งมันละลายน้ำ คนจนข้นแล้วราดเส้น"],
+ budget:1,world:false,group:"เส้นน้ำ"
+},
+{
+ name:"สุกี้แห้งหมู",type:"noodle",origin:"ไทย",
+ emoji:"🥬",desc:"วุ้นเส้นผัดไข่กับหมูและผัก",
+ items:["วุ้นเส้น","หมู","ไข่","ผักกาดขาว","ขึ้นฉ่าย","น้ำจิ้มสุกี้"],
+ recipe:["แช่วุ้นเส้นให้นุ่ม","ผัดหมูจนสุก","ใส่ไข่และผักลงผัด","ใส่วุ้นเส้นและน้ำจิ้มสุกี้","ผัดจนเข้ากันและเสิร์ฟ"],
+ budget:1,world:false,group:"สุกี้"
+},
+{
+ name:"มาม่าผัดขี้เมา",type:"noodle",origin:"ไทย",
+ emoji:"🍝",desc:"เส้นผัดขี้เมาหอมสมุนไพร",
+ items:["บะหมี่กึ่งสำเร็จรูป","หมู","พริก","กระเทียม","ใบกะเพรา","ข้าวโพดอ่อน"],
+ recipe:["ลวกเส้นให้พอสุกแล้วพักไว้","ผัดพริกและกระเทียม","ใส่หมูลงผัดจนสุก","ใส่เส้นและเครื่องปรุง","ใส่ผักและใบกะเพรา ผัดให้เข้ากัน"],
+ budget:1,world:false,group:"เส้นผัด"
+},
+{
+ name:"ก๋วยเตี๋ยวหมูน้ำใส",type:"noodle",origin:"ไทย",
+ emoji:"🍜",desc:"น้ำซุปใสหอมหวานพร้อมหมู",
+ items:["เส้นก๋วยเตี๋ยว","หมู","ลูกชิ้น","กระเทียม","ต้นหอม","น้ำซุป"],
+ recipe:["เตรียมน้ำซุปและปรุงรส","ลวกเส้นให้สุก","ลวกหมูและลูกชิ้นให้สุก","ใส่เส้นลงชาม","เติมน้ำซุป โรยต้นหอมและกระเทียมเจียว"],
+ budget:1,world:false,group:"เส้นน้ำ"
+},
+{
+ name:"ก๋วยเตี๋ยวต้มยำ",type:"noodle",origin:"ไทย",
+ emoji:"🍜",desc:"ก๋วยเตี๋ยวรสต้มยำเปรี้ยวเผ็ด",
+ items:["เส้นก๋วยเตี๋ยว","หมูสับ","ลูกชิ้น","มะนาว","พริกป่น","ถั่วลิสง"],
+ recipe:["ลวกเส้นและเครื่องต่าง ๆ","เตรียมน้ำซุป","ปรุงรสด้วยมะนาว พริก และเครื่องต้มยำ","ใส่หมูสับและลูกชิ้นลงชาม","เติมน้ำซุปและโรยถั่วลิสง"],
+ budget:1,world:false,group:"เส้นน้ำ"
+},
+{
+ name:"ยากิโซบะ",type:"noodle",origin:"ญี่ปุ่น",
+ emoji:"🍝",desc:"เส้นผัดซอสญี่ปุ่นกับหมู",
+ items:["เส้นยากิโซบะ","หมู","กะหล่ำปลี","แครอต","ซอสยากิโซบะ","ต้นหอม"],
+ recipe:["หั่นหมูและผักเป็นชิ้น","ผัดหมูให้สุก","ใส่ผักลงผัด","ใส่เส้นและซอสยากิโซบะ","ผัดจนซอสเคลือบเส้นทั่วถึง"],
+ budget:2,world:true,group:"เส้นผัด"
+},
+{
+ name:"ราเมนหมู",type:"noodle",origin:"ญี่ปุ่น",
+ emoji:"🍜",desc:"ราเมนน้ำซุปหอมพร้อมหมู",
+ items:["เส้นราเมน","หมู","ไข่","ต้นหอม","สาหร่าย","น้ำซุป"],
+ recipe:["ต้มน้ำซุปและปรุงรส","ลวกเส้นราเมน","เตรียมหมูและไข่ให้สุก","ใส่เส้นลงชาม","เติมน้ำซุปและจัดเครื่องด้านบน"],
+ budget:2,world:true,group:"เส้นน้ำ"
+},
+{
+ name:"อุด้งน้ำซุป",type:"noodle",origin:"ญี่ปุ่น",
+ emoji:"🍲",desc:"เส้นอุด้งเหนียวนุ่มในน้ำซุป",
+ items:["เส้นอุด้ง","โชยุ","มิริน","น้ำซุป","ต้นหอม","ไข่"],
+ recipe:["ต้มน้ำซุปกับโชยุและมิริน","ลวกเส้นอุด้ง","เตรียมไข่ตามชอบ","ใส่เส้นลงชาม","เติมน้ำซุปและโรยต้นหอม"],
+ budget:2,world:true,group:"เส้นน้ำ"
+},
+{
+ name:"สปาเกตตีคาโบนารา",type:"noodle",origin:"อิตาลี",
+ emoji:"🍝",desc:"พาสตาซอสครีมเข้มข้น",
+ items:["เส้นสปาเกตตี","เบคอน","ไข่","ชีส","นมสด","พริกไทย"],
+ recipe:["ต้มเส้นให้สุกตามต้องการ","ผัดเบคอนให้หอม","ผสมไข่ ชีส และนม","ลดไฟแล้วใส่เส้นลงกระทะ","คลุกซอสให้เคลือบเส้นและโรยพริกไทย"],
+ budget:3,world:true,group:"พาสต้า"
+},
+{
+ name:"สปาเกตตีซอสมะเขือเทศ",type:"noodle",origin:"อิตาลี",
+ emoji:"🍝",desc:"พาสตาซอสมะเขือเทศรสกลมกล่อม",
+ items:["เส้นสปาเกตตี","มะเขือเทศ","หมูสับ","หอมหัวใหญ่","กระเทียม","ซอสมะเขือเทศ"],
+ recipe:["ต้มเส้นให้สุก","ผัดกระเทียมและหอมหัวใหญ่","ใส่หมูสับลงผัดจนสุก","เติมมะเขือเทศและซอส","เคี่ยวจนเข้ากันแล้วราดบนเส้น"],
+ budget:2,world:true,group:"พาสต้า"
+},
+{
+ name:"มักกะโรนีผัดซอส",type:"noodle",origin:"ไทย",
+ emoji:"🍝",desc:"มักกะโรนีผัดซอสกับไข่และเนื้อสัตว์",
+ items:["มักกะโรนี","ไส้กรอก","ไข่","หอมหัวใหญ่","ซอสมะเขือเทศ"],
+ recipe:["ต้มมักกะโรนีให้สุก","ผัดไส้กรอกและหอมหัวใหญ่","ใส่ไข่ลงผัด","ใส่มักกะโรนีและซอส","ผัดให้เข้ากัน"],
+ budget:1,world:false,group:"พาสต้า"
+},
+{
+ name:"ผัดไทยกุ้งสด",type:"noodle",origin:"ไทย",
+ emoji:"🍤",desc:"เส้นจันท์ผัดซอสเปรี้ยวหวาน",
+ items:["เส้นจันท์","กุ้ง","ไข่","เต้าหู้","ถั่วงอก","น้ำมะขาม"],
+ recipe:["แช่เส้นให้นุ่ม","ผัดกุ้งและเต้าหู้","ใส่เส้นและซอสผัดไทย","ผัดจนเส้นนุ่มและซอสซึม","ใส่ไข่และถั่วงอก ผัดให้เข้ากัน"],
+ budget:2,world:false,group:"เส้นผัด"
+},
+{
+ name:"ผัดวุ้นเส้นหมู",type:"noodle",origin:"ไทย",
+ emoji:"🥢",desc:"วุ้นเส้นผัดหมูและไข่",
+ items:["วุ้นเส้น","หมู","ไข่","กะหล่ำปลี","แครอต","ซีอิ๊ว"],
+ recipe:["แช่วุ้นเส้นให้นุ่ม","ผัดหมูจนสุก","ใส่ไข่และผัก","ใส่วุ้นเส้นและปรุงรส","ผัดจนเส้นสุกและเข้ากัน"],
+ budget:1,world:false,group:"เส้นผัด"
+},
+{
+ name:"ก๋วยเตี๋ยวคั่วไก่",type:"noodle",origin:"ไทย",
+ emoji:"🍜",desc:"เส้นใหญ่คั่วกระทะกับไก่และไข่",
+ items:["เส้นใหญ่","ไก่","ไข่","กระเทียม","ต้นหอม","ซีอิ๊ว"],
+ recipe:["หมักไก่ด้วยเครื่องปรุง","ผัดกระเทียมและไก่จนสุก","ใส่เส้นใหญ่ลงคั่ว","ใส่ไข่และปรุงรส","คั่วจนหอมกระทะ โรยต้นหอม"],
+ budget:1,world:false,group:"เส้นผัด"
+},
+{
+ name:"บะหมี่หมูแดง",type:"noodle",origin:"จีน",
+ emoji:"🍜",desc:"บะหมี่ไข่พร้อมหมูแดงหอมหวาน",
+ items:["บะหมี่ไข่","หมูแดง","ต้นหอม","กระเทียมเจียว","น้ำซุป"],
+ recipe:["ลวกบะหมี่ให้สุก","เตรียมน้ำซุปและปรุงรส","หั่นหมูแดงเป็นชิ้น","ใส่เส้นลงชาม","จัดหมูแดงด้านบน เติมน้ำซุปและเครื่องโรย"],
+ budget:2,world:true,group:"เส้นน้ำ"
+},
+{
+ name:"ขนมจีนน้ำยา",type:"noodle",origin:"ไทย",
+ emoji:"🍜",desc:"ขนมจีนเสิร์ฟคู่แกงน้ำยา",
+ items:["ขนมจีน","ปลา","กะทิ","เครื่องแกง","ใบมะกรูด","ผักเคียง"],
+ recipe:["ต้มปลาให้สุกและแกะเนื้อ","โขลกหรือปั่นเนื้อปลากับเครื่องแกง","ตั้งหม้อใส่กะทิและเครื่องแกง","เติมน้ำและปรุงรส","เคี่ยวให้หอม เสิร์ฟกับขนมจีน"],
+ budget:2,world:false,group:"เส้นน้ำ"
+},
+{
+ name:"สปาเกตตีผัดพริกแห้ง",type:"noodle",origin:"อิตาลี",
+ emoji:"🍝",desc:"พาสตาผัดกระเทียมและพริกแห้ง",
+ items:["เส้นสปาเกตตี","กระเทียม","พริกแห้ง","เบคอน","น้ำมันมะกอก","พาร์สลีย์"],
+ recipe:["ต้มเส้นสปาเกตตี","ผัดกระเทียมและพริกแห้งด้วยน้ำมัน","ใส่เบคอนลงผัดจนสุก","ใส่เส้นและน้ำต้มเส้นเล็กน้อย","คลุกให้เข้ากันและโรยพาร์สลีย์"],
+ budget:2,world:true,group:"พาสต้า"
+}
 ];
 
-const $=id=>document.getElementById(id);
-let filter="all";
-let current=null;
-let favorites=[];
-try{favorites=JSON.parse(localStorage.getItem("pfa-favs")||"[]");}catch(e){favorites=[];}
+/* ==========================================
+   APP STATE
+========================================== */
 
-let soundOn=localStorage.getItem("pfa-sound")!=="off";
-let volume=Number(localStorage.getItem("pfa-volume")||45);
-$("volume").value=volume;
-updateSoundButton();
+const $ = id => document.getElementById(id);
 
-function updateSoundButton(){
-  $("soundToggle").textContent=soundOn?"♫ เปิดเสียง":"♪ ปิดเสียง";
-  $("volume").disabled=!soundOn;
+const STORAGE = {
+ daily:"pfa-daily-v2",
+ favs:"pfa-favs",
+ sound:"pfa-sound",
+ volume:"pfa-volume",
+ fridge:"pfa-fridge"
+};
+
+let currentType = "all";
+let currentMode = "normal";
+let currentDish = null;
+let isFridgeMode = false;
+let isSpinning = false;
+let fridgeIngredients = [];
+let soundEnabled = localStorage.getItem(STORAGE.sound) !== "false";
+let volume = Number(localStorage.getItem(STORAGE.volume) || 0.35);
+let audioContext = null;
+let dailyData = null;
+
+/* ==========================================
+   THAI DATE / DAILY STORAGE
+========================================== */
+
+function thaiDateKey(){
+  const parts = new Intl.DateTimeFormat("en-CA",{
+    timeZone:"Asia/Bangkok",
+    year:"numeric",
+    month:"2-digit",
+    day:"2-digit"
+  }).formatToParts(new Date());
+
+  const get = type => parts.find(p => p.type === type).value;
+  return `${get("year")}-${get("month")}-${get("day")}`;
 }
-let audioContext=null;
-function playSound(kind="tap"){
-  if(!soundOn||volume<=0)return;
+
+function loadDailyData(){
   try{
-    const AudioCtx=window.AudioContext||window.webkitAudioContext;
-    if(!AudioCtx)return;
-    if(!audioContext)audioContext=new AudioCtx();
-    if(audioContext.state==="suspended")audioContext.resume();
-    const now=audioContext.currentTime;
-    const notes=kind==="success"?[660,880,1046]:kind==="change"?[520,780]:[560,720];
-    notes.forEach((freq,index)=>{
-      const osc=audioContext.createOscillator();
-      const gain=audioContext.createGain();
-      osc.type="sine";
-      osc.frequency.setValueAtTime(freq,now+index*.065);
-      gain.gain.setValueAtTime(0,now+index*.065);
-      gain.gain.linearRampToValueAtTime((volume/100)*.075,now+index*.065+.012);
-      gain.gain.exponentialRampToValueAtTime(.001,now+index*.065+.13);
-      osc.connect(gain);gain.connect(audioContext.destination);
-      osc.start(now+index*.065);
-      osc.stop(now+index*.065+.15);
-    });
+    const saved = JSON.parse(localStorage.getItem(STORAGE.daily) || "null");
+
+    if(saved && saved.date === thaiDateKey()){
+      return {
+        date:saved.date,
+        meals:Array.isArray(saved.meals) ? saved.meals : [],
+        pending:saved.pending || null
+      };
+    }
+  }catch(e){}
+
+  return {
+    date:thaiDateKey(),
+    meals:[],
+    pending:null
+  };
+}
+
+function saveDaily(){
+  dailyData.date = thaiDateKey();
+  localStorage.setItem(STORAGE.daily,JSON.stringify(dailyData));
+}
+
+function checkNewDay(){
+  const today = thaiDateKey();
+
+  if(!dailyData || dailyData.date !== today){
+    dailyData = {
+      date:today,
+      meals:[],
+      pending:null
+    };
+    saveDaily();
+    currentDish = null;
+    renderEmpty();
+    updateStatus("วันใหม่แล้ว พร้อมค้นพบเมนูใหม่!");
+    return true;
+  }
+  return false;
+}
+
+dailyData = loadDailyData();
+
+/* ==========================================
+   FAVORITES
+========================================== */
+
+function getFavorites(){
+  try{
+    const value = JSON.parse(localStorage.getItem(STORAGE.favs) || "[]");
+    return Array.isArray(value) ? value : [];
+  }catch(e){
+    return [];
+  }
+}
+
+function saveFavorites(list){
+  localStorage.setItem(STORAGE.favs,JSON.stringify(list));
+}
+
+function isFavorite(name){
+  return getFavorites().includes(name);
+}
+
+function toggleFavorite(){
+  if(!currentDish) return;
+
+  let favs = getFavorites();
+
+  if(favs.includes(currentDish.name)){
+    favs = favs.filter(n => n !== currentDish.name);
+    toast("นำออกจากเมนูโปรดแล้ว");
+  }else{
+    favs.push(currentDish.name);
+    toast("เพิ่มเมนูโปรดแล้ว ♡");
+  }
+
+  saveFavorites(favs);
+  updateFavoriteButton();
+}
+
+/* ==========================================
+   SOUND
+========================================== */
+
+function playSound(freq=520,duration=.09){
+  if(!soundEnabled) return;
+
+  try{
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if(!AudioCtx) return;
+
+    if(!audioContext) audioContext = new AudioCtx();
+    if(audioContext.state === "suspended") audioContext.resume();
+
+    const oscillator = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+
+    oscillator.type = "sine";
+    oscillator.frequency.setValueAtTime(freq,audioContext.currentTime);
+
+    gain.gain.setValueAtTime(volume * .12,audioContext.currentTime);
+    gain.gain.exponentialRampToValueAtTime(.001,audioContext.currentTime + duration);
+
+    oscillator.connect(gain);
+    gain.connect(audioContext.destination);
+
+    oscillator.start();
+    oscillator.stop(audioContext.currentTime + duration);
   }catch(e){}
 }
-$("soundToggle").onclick=()=>{
-  soundOn=!soundOn;
-  localStorage.setItem("pfa-sound",soundOn?"on":"off");
+
+function clickSound(){
+  playSound(600,.06);
+}
+
+function toggleSound(){
+  soundEnabled = !soundEnabled;
+  localStorage.setItem(STORAGE.sound,String(soundEnabled));
   updateSoundButton();
-  if(soundOn)playSound("success");
-};
-$("volume").oninput=()=>{
-  volume=Number($("volume").value);
-  localStorage.setItem("pfa-volume",String(volume));
-  if(volume>0)playSound("tap");
-};
+  if(soundEnabled) playSound(720,.12);
+  toast(soundEnabled ? "เปิดเสียงแล้ว" : "ปิดเสียงแล้ว");
+}
 
-function pool(mode="normal"){
-  let p=foods.filter(f=>filter==="all"||f.type===filter);
-  if(mode==="budget")p=p.filter(f=>f.budget);
-  if(mode==="world")p=p.filter(f=>f.world);
-  if(mode==="fridge")p=p.filter(f=>!f.world&&/ไข่|หมู|ไก่|ข้าว|เส้น/.test(f.items));
-  return p;
+function updateSoundButton(){
+  $("soundBtn").innerHTML = `<span>${soundEnabled ? "♫" : "🔇"}</span>${soundEnabled ? "ปิดเสียง" : "เปิดเสียง"}`;
 }
-function clearDish(){
-  current=null;
-  $("dish").textContent="วันนี้จะกินอะไรดีนะ?";
-  $("dish").className="placeholder";
-  $("origin").textContent="รอเลือกเมนู";
-  $("desc").textContent="กดปุ่มสุ่มเมนูเพื่อให้เชฟช่วยเลือกให้เลย";
-  $("items").textContent="เมนูและวัตถุดิบจะแสดงตรงนี้";
-  $("recipe").textContent="";
-  $("recipe").classList.remove("show");
-  $("recipeBtn").disabled=true;
-  $("favBtn").disabled=true;
-  $("recipeBtn").textContent="ดูวิธีทำ ✧";
-  $("favBtn").textContent="♡ เมนูโปรด";
-}
-function show(index,message){
-  const f=foods[index];
-  if(!f)return;
-  current=index;
-  $("dish").className="dish";
-  $("dish").textContent=f.name;
-  $("origin").textContent=f.origin;
-  $("desc").textContent=f.desc;
-  $("items").textContent=f.items;
-  $("recipe").textContent=f.recipe;
-  $("recipe").classList.remove("show");
-  $("recipeBtn").disabled=false;
-  $("favBtn").disabled=false;
-  $("recipeBtn").textContent="ดูวิธีทำ ✧";
-  $("favBtn").textContent=favorites.includes(f.name)?"♥ บันทึกแล้ว":"♡ เมนูโปรด";
-  $("speech").textContent=message||"เจอเมนูแล้วครับ! ลองทำกันเลย";
-  $("dishCard").classList.remove("changed");
-  void $("dishCard").offsetWidth;
-  $("dishCard").classList.add("changed");
-  playSound("change");
-}
-function random(mode="normal"){
-  let p=pool(mode);
-  if(!p.length){
-    $("status").textContent="ยังไม่มีเมนูในหมวดนี้ ลองเลือกหมวดอื่นนะ";
-    playSound("tap");return;
-  }
-  if(mode==="normal"&&filter==="all"){
-    const type=Math.random()<.5?"rice":"noodle";
-    const group=p.filter(f=>f.type===type);
-    if(group.length)p=group;
-  }
-  let choices=p.filter(f=>foods.indexOf(f)!==current);
-  if(!choices.length)choices=p;
-  const selected=choices[Math.floor(Math.random()*choices.length)];
-  show(foods.indexOf(selected),
-    mode==="world"?"เมนูต่างประเทศมาแล้วครับ! 🌏":
-    mode==="budget"?"เมนูประหยัดมาแล้วครับ! 🪙":
-    mode==="fridge"?"ลองใช้วัตถุดิบที่มีให้คุ้มกันนะครับ! 🧊":
-    "ปิ๊ง! เจอเมนูอร่อยแล้วครับ ✨");
-  $("status").textContent=mode==="normal"?"ข้าว 50% · เส้น 50% · สุ่มเมนูให้แล้ว!":
-    mode==="fridge"?"เมนูจากวัตถุดิบพื้นฐานที่มี":
-    mode==="budget"?"คัดเมนูที่ประหยัดวัตถุดิบ":
-    "เมนูจากต่างประเทศ";
-}
-$("randomBtn").onclick=()=>random();
-$("fridgeBtn").onclick=()=>{
-  const answer=prompt("มีวัตถุดิบอะไรบ้าง? เช่น ไข่ หมู ข้าว เส้น");
-  if(answer===null)return;
-  const words=answer.split(/[,\s、]+/).filter(Boolean);
-  if(!words.length){random("fridge");return;}
-  const matches=foods.filter(f=>(filter==="all"||f.type===filter)&&
-    words.some(w=>f.items.includes(w)));
-  if(!matches.length){
-    $("status").textContent="ยังไม่พบเมนูที่ตรงกับวัตถุดิบ ลองใส่คำว่า ไข่ หมู ไก่ ข้าว หรือเส้น";
-    playSound("tap");return;
-  }
-  const choices=matches.filter(f=>foods.indexOf(f)!==current);
-  const selected=(choices.length?choices:matches)[Math.floor(Math.random()*(choices.length||matches.length))];
-  show(foods.indexOf(selected),"เจอเมนูจากของที่มีแล้วครับ! 🧊");
-  $("status").textContent="พบเมนูที่ใช้วัตถุดิบที่คุณมี";
-};
-$("budgetBtn").onclick=()=>random("budget");
-$("worldBtn").onclick=()=>random("world");
 
-$("recipeBtn").onclick=()=>{
-  if(current===null)return;
-  $("recipe").classList.toggle("show");
-  $("recipeBtn").textContent=$("recipe").classList.contains("show")?"ซ่อนวิธีทำ":"ดูวิธีทำ ✧";
-  playSound("tap");
-};
-$("favBtn").onclick=()=>{
-  if(current===null)return;
-  const name=foods[current].name;
-  if(favorites.includes(name))favorites=favorites.filter(x=>x!==name);
-  else favorites.push(name);
-  localStorage.setItem("pfa-favs",JSON.stringify(favorites));
-  $("favBtn").textContent=favorites.includes(name)?"♥ บันทึกแล้ว":"♡ เมนูโปรด";
-  $("status").textContent="เมนูโปรดของคุณ "+favorites.length+" รายการ";
-  playSound("success");
-};
-document.querySelectorAll("[data-filter]").forEach(button=>{
-  button.onclick=()=>{
-    filter=button.dataset.filter;
-    document.querySelectorAll("[data-filter]").forEach(b=>b.classList.toggle("active",b===button));
-    playSound("tap");
-    if(current!==null)random();
-    else $("status").textContent="เลือกหมวดแล้ว กดสุ่มเมนูได้เลย";
+/* ==========================================
+   FILTERING AND FOOD POOL
+========================================== */
+
+function getBasePool(){
+  let pool = foods.filter(food => {
+    return currentType === "all" || food.type === currentType;
+  });
+
+  if(currentMode === "budget"){
+    pool = pool.filter(food => food.budget <= 1);
+  }
+
+  if(currentMode === "world"){
+    pool = pool.filter(food => food.world);
+  }
+
+  if(isFridgeMode){
+    pool = pool.filter(food => {
+      return fridgeIngredients.some(item =>
+        food.items.some(ingredient =>
+          ingredient.toLowerCase().includes(item.toLowerCase()) ||
+          item.toLowerCase().includes(ingredient.toLowerCase())
+        )
+      );
+    });
+  }
+
+  return pool;
+}
+
+/* ==========================================
+   VARIETY SCORING
+========================================== */
+
+function getFoodGroup(food){
+  return food.group || food.type;
+}
+
+function scoreFood(food){
+  const meals = dailyData.meals;
+  let score = 10;
+
+  if(meals.length === 0) return score;
+
+  const last = meals[meals.length - 1];
+
+  // ลดคะแนนเมนูประเภทเดียวกับมื้อล่าสุด
+  if(last.type === food.type) score -= 1.5;
+
+  // ลดคะแนนกลุ่มอาหารเดิม
+  if(last.group === getFoodGroup(food)) score -= 5;
+
+  // ลดคะแนนวัตถุดิบหลักที่ซ้ำกัน
+  const overlap = food.items.filter(item =>
+    last.items && last.items.includes(item)
+  ).length;
+
+  score -= overlap * 1.3;
+
+  // ลดคะแนนเมนูที่ยืนยันไปแล้วในวันเดียวกัน
+  if(meals.some(meal => meal.name === food.name)){
+    score -= 100;
+  }
+
+  // เพิ่มคะแนนกลุ่มที่ยังไม่ค่อยได้กิน
+  const sameGroupCount = meals.filter(m => m.group === getFoodGroup(food)).length;
+  score -= sameGroupCount * 2;
+
+  return score;
+}
+
+function weightedPick(pool){
+  if(!pool.length) return null;
+
+  const scores = pool.map(food => ({
+    food,
+    weight:Math.max(0.5,scoreFood(food) + 6)
+  }));
+
+  const total = scores.reduce((sum,item) => sum + item.weight,0);
+  let random = Math.random() * total;
+
+  for(const item of scores){
+    random -= item.weight;
+    if(random <= 0) return item.food;
+  }
+
+  return scores[scores.length - 1].food;
+}
+
+function pickRandomFood(){
+  let pool = getBasePool();
+
+  if(!pool.length){
+    return null;
+  }
+
+  const notEaten = pool.filter(food =>
+    !dailyData.meals.some(meal => meal.name === food.name)
+  );
+
+  if(notEaten.length){
+    pool = notEaten;
+  }
+
+  return weightedPick(pool);
+}
+
+/* ==========================================
+   RENDER FOOD
+========================================== */
+
+function renderEmpty(){
+  $("dishDisplay").innerHTML = `
+    <div class="empty-dish">
+      พร้อมแล้วหรือยัง? กดสุ่มเพื่อค้นพบมื้ออาหาร
+    </div>
+  `;
+
+  currentDish = null;
+  updateButtons();
+}
+
+function renderDish(food){
+  if(!food){
+    $("dishDisplay").innerHTML = `
+      <div class="empty-dish">
+        ไม่พบเมนูที่ตรงกับเงื่อนไขนี้<br>
+        ลองเปลี่ยนตัวกรองหรือวัตถุดิบดูนะ
+      </div>
+    `;
+    currentDish = null;
+    updateButtons();
+    return;
+  }
+
+  currentDish = food;
+  dailyData.pending = food.name;
+  saveDaily();
+
+  $("dishDisplay").innerHTML = `
+    <div class="dish-emoji">${food.emoji}</div>
+    <div class="dish-name">${escapeHTML(food.name)}</div>
+    <div class="dish-desc">${escapeHTML(food.desc)}</div>
+    <div class="dish-meta">
+      <span class="tag">${food.type === "rice" ? "เมนูข้าว" : "เมนูเส้น"}</span>
+      <span class="tag">${escapeHTML(food.origin)}</span>
+      <span class="tag">${food.budget === 1 ? "ประหยัด" : food.budget === 2 ? "ระดับกลาง" : "วัตถุดิบพิเศษ"}</span>
+    </div>
+  `;
+
+  updateButtons();
+  updateStatus("ได้เมนูแล้ว! ถูกใจเมนูนี้กดยืนยันได้เลย");
+}
+
+function escapeHTML(value){
+  return String(value).replace(/[&<>"']/g,char => ({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#039;"
+  })[char]);
+}
+
+/* ==========================================
+   RANDOM BUTTON
+========================================== */
+
+function random(){
+  if(isSpinning) return;
+
+  checkNewDay();
+
+  if(dailyData.meals.length >= 5){
+    toast("วันนี้ยืนยันครบ 5 มื้อแล้ว");
+    return;
+  }
+
+  isSpinning = true;
+  $("randomBtn").disabled = true;
+  $("randomBtn").textContent = "✧ กำลังค้นหาเมนู ✧";
+
+  playSound(420,.07);
+
+  const pool = getBasePool();
+
+  if(!pool.length){
+    isSpinning = false;
+    $("randomBtn").disabled = false;
+    $("randomBtn").textContent = "✧ สุ่มเมนูอาหาร ✧";
+    toast("ไม่พบเมนูที่ตรงกับเงื่อนไข");
+    return;
+  }
+
+  let count = 0;
+  const duration = 900;
+
+  const timer = setInterval(() => {
+    const preview = pool[Math.floor(Math.random() * pool.length)];
+    $("dishDisplay").innerHTML = `
+      <div class="dish-emoji">${preview.emoji}</div>
+      <div class="dish-name">${escapeHTML(preview.name)}</div>
+      <div class="dish-desc">กำลังค้นพบเมนูที่เหมาะกับคุณ...</div>
+    `;
+
+    playSound(300 + Math.random()*300,.035);
+    count += 1;
+
+    if(count >= 9){
+      clearInterval(timer);
+      const selected = pickRandomFood();
+      renderDish(selected);
+
+      isSpinning = false;
+      $("randomBtn").disabled = false;
+      $("randomBtn").textContent = "✧ สุ่มเมนูอาหาร ✧";
+      playSound(760,.13);
+    }
+  },duration/9);
+}
+
+/* ==========================================
+   CONFIRM / UNDO MEAL
+========================================== */
+
+function confirmMeal(){
+  if(!currentDish || isSpinning) return;
+
+  checkNewDay();
+
+  if(dailyData.meals.length >= 5){
+    toast("วันนี้ครบ 5 มื้อแล้ว");
+    return;
+  }
+
+  if(dailyData.meals.some(m => m.name === currentDish.name)){
+    toast("เมนูนี้ถูกยืนยันไปแล้ววันนี้");
+    return;
+  }
+
+  dailyData.meals.push({
+    name:currentDish.name,
+    type:currentDish.type,
+    group:getFoodGroup(currentDish),
+    items:[...currentDish.items],
+    confirmedAt:Date.now()
+  });
+
+  dailyData.pending = null;
+  saveDaily();
+
+  currentDish = null;
+  renderEmpty();
+
+  updateStatus("ยืนยันมื้ออาหารแล้ว ✓");
+  showUndoButton();
+  toast("บันทึกมื้ออาหารเรียบร้อยแล้ว");
+  playSound(850,.16);
+}
+
+function undoLastMeal(){
+  if(!dailyData.meals.length) return;
+
+  dailyData.meals.pop();
+  saveDaily();
+
+  updateStatus("ยกเลิกการยืนยันมื้อล่าสุดแล้ว");
+  toast("ยกเลิกมื้ออาหารแล้ว");
+  hideUndoButton();
+}
+
+function showUndoButton(){
+  $("statusLine").innerHTML = `
+    <span class="status-dot"></span>
+    <span>บันทึกมื้ออาหารแล้ว</span>
+    <button id="undoBtn">เลิกทำ</button>
+  `;
+  $("undoBtn").onclick = undoLastMeal;
+}
+
+function hideUndoButton(){
+  updateStatus("เลือกเมนูที่ถูกใจ แล้วกดยืนยันได้เลย");
+}
+
+/* ==========================================
+   STATUS AND BUTTONS
+========================================== */
+
+function updateStatus(message){
+  $("statusLine").innerHTML = `
+    <span class="status-dot"></span>
+    <span>${escapeHTML(message)}</span>
+  `;
+}
+
+function updateButtons(){
+  const hasDish = !!currentDish;
+  const canConfirm = dailyData.meals.length < 5;
+
+  $("confirmBtn").disabled = !hasDish || !canConfirm;
+  $("recipeBtn").disabled = !hasDish;
+  $("favoriteBtn").disabled = !hasDish;
+  $("rerollBtn").disabled = !hasDish || !canConfirm;
+  $("randomBtn").disabled = isSpinning || !canConfirm;
+
+  updateFavoriteButton();
+}
+
+function updateFavoriteButton(){
+  if(!currentDish){
+    $("favoriteBtn").textContent = "♡ เพิ่มเมนูโปรด";
+    return;
+  }
+
+  $("favoriteBtn").textContent = isFavorite(currentDish.name)
+    ? "♥ อยู่ในเมนูโปรดแล้ว"
+    : "♡ เพิ่มเมนูโปรด";
+}
+
+/* ==========================================
+   FILTER BUTTONS
+========================================== */
+
+$("typeFilters").addEventListener("click",event => {
+  const button = event.target.closest("[data-type]");
+  if(!button) return;
+
+  currentType = button.dataset.type;
+
+  document.querySelectorAll("[data-type]").forEach(el =>
+    el.classList.toggle("active",el === button)
+  );
+
+  clickSound();
+  isFridgeMode = false;
+  renderEmpty();
+  updateStatus("เปลี่ยนประเภทเมนูแล้ว");
+});
+
+$("modeFilters").addEventListener("click",event => {
+  const button = event.target.closest("[data-mode]");
+  if(!button) return;
+
+  currentMode = button.dataset.mode;
+
+  document.querySelectorAll("[data-mode]").forEach(el =>
+    el.classList.toggle("active",el === button)
+  );
+
+  clickSound();
+  isFridgeMode = false;
+  renderEmpty();
+  updateStatus("เปลี่ยนรูปแบบการสุ่มแล้ว");
+});
+
+/* ==========================================
+   RECIPE MODAL
+========================================== */
+
+function openRecipe(){
+  if(!currentDish) return;
+
+  const food = currentDish;
+
+  openModal(`วิธีทำ · ${food.name}`,`
+    <div style="color:#aab6c5;font-size:12px;line-height:1.8">
+      ${escapeHTML(food.desc)}
+    </div>
+
+    <div class="recipe-title">วัตถุดิบ</div>
+    <div class="ingredient-list">
+      ${food.items.map(item=>`
+        <span class="ingredient">✦ ${escapeHTML(item)}</span>
+      `).join("")}
+    </div>
+
+    <div class="recipe-title">ขั้นตอนการทำ</div>
+    <ol class="recipe-list">
+      ${food.recipe.map(step=>`<li>${escapeHTML(step)}</li>`).join("")}
+    </ol>
+
+    <div style="font-size:10px;color:#8290a2;margin-top:14px">
+      สามารถปรับปริมาณวัตถุดิบและเครื่องปรุงตามความเหมาะสม
+    </div>
+  `);
+}
+
+/* ==========================================
+   MODAL SYSTEM
+========================================== */
+
+function openModal(title,content){
+  $("modalTitle").textContent = title;
+  $("modalBody").innerHTML = content;
+  $("modalBackdrop").classList.add("show");
+}
+
+function closeModal(){
+  $("modalBackdrop").classList.remove("show");
+}
+
+$("closeModal").onclick = closeModal;
+
+$("modalBackdrop").addEventListener("click",event=>{
+  if(event.target === $("modalBackdrop")) closeModal();
+});
+
+/* ==========================================
+   FRIDGE MODE
+========================================== */
+
+function openFridge(){
+  const saved = JSON.parse(localStorage.getItem(STORAGE.fridge) || "[]");
+
+  const ingredients = [
+    "หมู","ไก่","เนื้อวัว","กุ้ง","ไข่","ไส้กรอก",
+    "ข้าวสวย","เส้นใหญ่","วุ้นเส้น","เส้นสปาเกตตี",
+    "บะหมี่","กะหล่ำปลี","ผักกาดขาว","แตงกวา",
+    "มะเขือเทศ","แครอต","หอมหัวใหญ่","กระเทียม",
+    "พริก","กะเพรา","ต้นหอม","ชีส","กิมจิ",
+    "เต้าหู้","ปลา"
+  ];
+
+  openModal("🧊 วัตถุดิบในตู้เย็น",`
+    <p style="font-size:12px;color:#9ba8b9">
+      เลือกวัตถุดิบที่มีอยู่ แล้วระบบจะค้นหาเมนูที่ใช้วัตถุดิบเหล่านั้น
+    </p>
+
+    <div class="ingredient-list">
+      ${ingredients.map(item=>`
+        <label class="ingredient">
+          <input type="checkbox" value="${escapeHTML(item)}"
+            class="fridge-check" ${saved.includes(item) ? "checked" : ""}
+            style="accent-color:#c9a96e">
+          ${escapeHTML(item)}
+        </label>
+      `).join("")}
+    </div>
+
+    <button class="main-btn" id="applyFridge">ค้นหาเมนูจากวัตถุดิบ</button>
+    <button class="action-btn" id="clearFridge" style="width:100%;margin-top:12px">
+      ล้างรายการวัตถุดิบ
+    </button>
+  `);
+
+  $("applyFridge").onclick = () => {
+    fridgeIngredients = [...document.querySelectorAll(".fridge-check:checked")]
+      .map(input=>input.value);
+
+    localStorage.setItem(STORAGE.fridge,JSON.stringify(fridgeIngredients));
+
+    if(!fridgeIngredients.length){
+      toast("เลือกวัตถุดิบอย่างน้อย 1 อย่าง");
+      return;
+    }
+
+    isFridgeMode = true;
+    closeModal();
+    renderEmpty();
+    updateStatus("กำลังค้นหาเมนูจากวัตถุดิบของคุณ");
+    toast("ตั้งค่าวัตถุดิบเรียบร้อย");
   };
-});
-document.querySelectorAll("button").forEach(button=>{
-  if(!button.onclick)button.addEventListener("click",()=>playSound("tap"));
-});
-clearDish();
 
-if("serviceWorker" in navigator&&location.protocol.startsWith("http")){
-  window.addEventListener("load",()=>{
-    navigator.serviceWorker.register("./sw.js").catch(()=>{});
+  $("clearFridge").onclick = () => {
+    fridgeIngredients = [];
+    localStorage.removeItem(STORAGE.fridge);
+    isFridgeMode = false;
+    closeModal();
+    renderEmpty();
+    toast("ล้างวัตถุดิบแล้ว");
+  };
+}
+
+/* ==========================================
+   FAVORITES MODAL
+========================================== */
+
+function openFavorites(){
+  const favs = getFavorites();
+
+  const content = favs.length
+    ? favs.map(name=>{
+        const food = foods.find(f=>f.name === name);
+        if(!food) return "";
+
+        return `
+          <div class="favorite-item">
+            <span>${food.emoji} ${escapeHTML(food.name)}</span>
+            <button data-remove-fav="${escapeHTML(food.name)}">♥</button>
+          </div>
+        `;
+      }).join("")
+    : `<p style="color:#9ba8b9;font-size:13px">ยังไม่มีเมนูโปรด ลองเพิ่มเมนูที่ชอบดูนะ</p>`;
+
+  openModal("♡ เมนูโปรด",content);
+
+  document.querySelectorAll("[data-remove-fav]").forEach(button=>{
+    button.onclick = () => {
+      const name = button.dataset.removeFav;
+      saveFavorites(getFavorites().filter(item=>item !== name));
+      openFavorites();
+      toast("นำเมนูออกจากรายการโปรดแล้ว");
+    };
   });
 }
+
+/* ==========================================
+   SETTINGS
+========================================== */
+
+function openSettings(){
+  openModal("ตั้งค่า",`
+    <div class="setting-row">
+      <span>เสียงประกอบ</span>
+      <input type="checkbox" class="switch" id="soundSwitch" ${soundEnabled ? "checked" : ""}>
+    </div>
+
+    <div class="setting-row">
+      <span>ระดับเสียง</span>
+      <input type="range" min="0" max="1" step=".05" id="volumeRange" value="${volume}">
+    </div>
+
+    <div style="font-size:11px;color:#8795a7;line-height:1.8;margin-top:16px">
+      ระบบจะบันทึกเมนูที่คุณยืนยันไว้ในอุปกรณ์นี้ และเริ่มวันใหม่ตามวันที่ประเทศไทยโดยอัตโนมัติ
+    </div>
+  `);
+
+  $("soundSwitch").onchange = event=>{
+    soundEnabled = event.target.checked;
+    localStorage.setItem(STORAGE.sound,String(soundEnabled));
+    updateSoundButton();
+    if(soundEnabled) playSound(700,.1);
+  };
+
+  $("volumeRange").oninput = event=>{
+    volume = Number(event.target.value);
+    localStorage.setItem(STORAGE.volume,String(volume));
+  };
+}
+
+/* ==========================================
+   TOAST
+========================================== */
+
+let toastTimer;
+
+function toast(message){
+  const element = $("toast");
+  element.textContent = message;
+  element.classList.add("show");
+
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>{
+    element.classList.remove("show");
+  },2200);
+}
+
+/* ==========================================
+   PENDING RESTORE
+========================================== */
+
+function restorePending(){
+  if(!dailyData.pending) return;
+
+  const food = foods.find(item => item.name === dailyData.pending);
+
+  if(food && !dailyData.meals.some(m=>m.name === food.name)){
+    currentDish = food;
+
+    $("dishDisplay").innerHTML = `
+      <div class="dish-emoji">${food.emoji}</div>
+      <div class="dish-name">${escapeHTML(food.name)}</div>
+      <div class="dish-desc">${escapeHTML(food.desc)}</div>
+      <div class="dish-meta">
+        <span class="tag">${food.type === "rice" ? "เมนูข้าว" : "เมนูเส้น"}</span>
+        <span class="tag">${escapeHTML(food.origin)}</span>
+      </div>
+    `;
+
+    updateButtons();
+    updateStatus("เมนูที่สุ่มไว้ยังรอการยืนยัน");
+  }else{
+    dailyData.pending = null;
+    saveDaily();
+  }
+}
+
+/* ==========================================
+   EVENT LISTENERS
+========================================== */
+
+$("randomBtn").addEventListener("click",random);
+$("rerollBtn").addEventListener("click",random);
+$("confirmBtn").addEventListener("click",confirmMeal);
+$("recipeBtn").addEventListener("click",openRecipe);
+$("favoriteBtn").addEventListener("click",toggleFavorite);
+$("fridgeBtn").addEventListener("click",openFridge);
+$("favoritesBtn").addEventListener("click",openFavorites);
+$("settingsBtn").addEventListener("click",openSettings);
+$("soundBtn").addEventListener("click",toggleSound);
+
+/* ==========================================
+   REAL-DAY RESET CHECK
+   Asia/Bangkok — no clock shown in UI
+========================================== */
+
+document.addEventListener("visibilitychange",()=>{
+  if(!document.hidden) checkNewDay();
+});
+
+window.addEventListener("focus",checkNewDay);
+
+window.addEventListener("pageshow",checkNewDay);
+
+// ตรวจวันจริงเป็นระยะ เผื่อเปิดหน้าแอปค้างไว้ข้ามวัน
+setInterval(checkNewDay,60000);
+
+/* ==========================================
+   INITIALIZE
+========================================== */
+
+function initialize(){
+  updateSoundButton();
+  updateButtons();
+  restorePending();
+
+  if(!currentDish){
+    renderEmpty();
+  }
+
+  if(dailyData.meals.length >= 5){
+    updateStatus("วันนี้ยืนยันครบ 5 มื้อแล้ว");
+  }
+}
+
+initialize();
+
+/* ==========================================
+   PWA SERVICE WORKER
+========================================== */
+
+if("serviceWorker" in navigator){
+  window.addEventListener("load",()=>{
+    navigator.serviceWorker.register("./sw.js")
+      .catch(error=>{
+        console.warn("Service Worker registration failed:",error);
+      });
+  });
+}
+
 </script>
 </body>
 </html>
